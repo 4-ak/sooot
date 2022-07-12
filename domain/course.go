@@ -1,4 +1,4 @@
-package main
+package domain
 
 type Course struct {
 	Name      string
