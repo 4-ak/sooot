@@ -1,8 +1,8 @@
 package domain
 
 type Review struct {
-	score   int
-	comment string
+	Score   int
+	Comment string
 }
 
 type ReviewList struct {
@@ -42,7 +42,7 @@ func (r *ReviewList) Delete(num int) {
 func (r *ReviewList) Average() float32 {
 	var sum float32
 	for i := 0; i < len(r.List); i++ {
-		sum += float32(r.List[i].score)
+		sum += float32(r.List[i].Score)
 	}
 	return sum / float32(len(r.List))
 }
