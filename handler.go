@@ -21,6 +21,7 @@ func NewServer(courses *domain.CourseList) *Server {
 	}
 
 	server.App.Get("/", server.ViewCourses())
+	server.App.Get("/login", server.LoginPage())
 	return &server
 }
 
@@ -30,5 +31,11 @@ func (s *Server) ViewCourses() fiber.Handler {
 		return c.Render("main", fiber.Map{
 			"Courses": s.List,
 		})
+	}
+}
+
+func (s *Server) LoginPage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("login", nil)
 	}
 }
