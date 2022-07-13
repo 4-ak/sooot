@@ -25,7 +25,7 @@ func NewServer(courses *domain.CourseList) *Server {
 
 	server.App.Get("/", server.ViewCourses())
 	server.App.Get("/login", server.LoginPage())
-  
+
 	server.App.Post("/login", server.Login())
 	server.App.Get("/registration", server.RegistrationPage())
 	server.App.Post("/registration", server.Registration())
@@ -49,7 +49,6 @@ func (s *Server) LoginPage() fiber.Handler {
 		return c.Render("login", nil)
 	}
 }
-
 
 func (s *Server) Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -117,7 +116,7 @@ func (s *Server) Registration() fiber.Handler {
 				<meta charset="UTF-8">
 				<script>
 				if(!alert("이미 가입되어 있습니다.")) {
-					//window.location = "/registration";
+					window.location = "/registration";
 				}
 				</script>
 			</head>
@@ -139,6 +138,7 @@ func (s *Server) Registration() fiber.Handler {
 		`)
 		return c.SendStatus(201)
 	}
+}
 
 func (s *Server) EditCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
