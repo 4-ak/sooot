@@ -67,13 +67,37 @@ func (s *Server) Registration() fiber.Handler {
 			fmt.Println(err)
 			return nil
 		}
+		c.Accepts("html")
 
 		if _, err := db.DB.Exec("INSERT INTO user(id, pass, is_cert) VALUES(?,?,1)", user.EmailID, user.Pass); err != nil {
-			fmt.Println("회원가입 실패")
+			fmt.Printf("[정보] 계정 생성 실패 : %v\n", err.Error())
 			fmt.Println(err)
-			// 실패를 알리는 메시지
+
+			c.Format(`
+			<head>
+				<meta charset="UTF-8">
+				<script>
+				if(!alert("이미 가입되어 있습니다.")) {
+					//window.location = "/registration";
+				}
+				</script>
+			</head>
+			`)
+			return c.SendStatus(200)
 		}
-		c.Location("/login")
+
+		fmt.Printf("[정보] 계정 생성 성공 : %v\n", user.EmailID)
+
+		c.Format(`
+		<head>
+			<meta charset="UTF-8">
+			<script>
+				if(!alert("가입이 완료되었습니다!")) {
+					window.location="/login";
+				}
+			</script>
+		</head>
+		`)
 		return c.SendStatus(201)
 	}
 }
