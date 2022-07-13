@@ -25,6 +25,7 @@ func NewServer(courses *domain.CourseList) *Server {
 
 	server.App.Get("/", server.ViewCourses())
 	server.App.Get("/login", server.LoginPage())
+	server.App.Post("/login", server.Login())
 	server.App.Get("/registration", server.RegistrationPage())
 	server.App.Post("/registration", server.Registration())
 	return &server
@@ -47,7 +48,40 @@ func (s *Server) LoginPage() fiber.Handler {
 
 func (s *Server) Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.SendStatus(200)
+		var user struct {
+			ID   string `form:"email_id"`
+			Pass string `form:"pass"`
+		}
+
+		if err := c.BodyParser(&user); err != nil {
+			fmt.Println(err)
+			return nil // TODO :500번대 메시지를 전송?
+		}
+
+		row := db.DB.QueryRow("SELECT uid FROM user WHERE id=? and pass=?", user.ID, user.Pass)
+		uid := -1
+		if err := row.Scan(&uid); err != nil {
+			c.Accepts("html")
+			c.Format(`
+			<head>
+				<meta charset="UTF-8">
+				<script>
+					if(!alert("존재하지 않는 계정이거나, 비밀번호가 틀렸습니다.")) {
+						window.location = "/login";
+					}
+				</script>
+			</head>
+			`)
+			return c.SendStatus(200)
+		}
+
+		cookie := fiber.Cookie{
+			Name:  "token",
+			Value: fmt.Sprintf("%v", uid),
+		}
+		c.Cookie(&cookie)
+
+		return c.Redirect("/", fiber.StatusFound)
 	}
 }
 
@@ -60,16 +94,16 @@ func (s *Server) RegistrationPage() fiber.Handler {
 func (s *Server) Registration() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var user struct {
-			EmailID string `form:"email_id"`
-			Pass    string `form:"pass"`
+			ID   string `form:"email_id"`
+			Pass string `form:"pass"`
 		}
 		if err := c.BodyParser(&user); err != nil {
 			fmt.Println(err)
-			return nil
+			return nil // TODO :500번대 메시지를 전송?
 		}
 		c.Accepts("html")
 
-		if _, err := db.DB.Exec("INSERT INTO user(id, pass, is_cert) VALUES(?,?,1)", user.EmailID, user.Pass); err != nil {
+		if _, err := db.DB.Exec(`INSERT INTO user(id, pass, is_cert) VALUES(?,?,1)`, user.ID, user.Pass); err != nil {
 			fmt.Printf("[정보] 계정 생성 실패 : %v\n", err.Error())
 			fmt.Println(err)
 
@@ -86,7 +120,7 @@ func (s *Server) Registration() fiber.Handler {
 			return c.SendStatus(200)
 		}
 
-		fmt.Printf("[정보] 계정 생성 성공 : %v\n", user.EmailID)
+		fmt.Printf("[정보] 계정 생성 성공 : %v\n", user.ID)
 
 		c.Format(`
 		<head>
