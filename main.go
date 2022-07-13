@@ -1,10 +1,13 @@
 package main
 
 import (
+	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/domain"
 )
 
 func main() {
+	db.NewDB()
+
 	server := NewServer(&domain.CourseList{
 		[]domain.Course{
 			{"집 보내줘", "김교수", domain.ReviewList{
