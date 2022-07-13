@@ -5,7 +5,8 @@
     <title>main</title>
 </head>
 <body>
-<div>{{.Name}}/{{.Professor}}</div>
-{{end}}
+    {{range .Courses}}
+        <div>{{.Name}}/{{.Professor}}</div>
+    {{end}}
 </body>
 </html>
