@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -42,18 +42,6 @@ func (s *Server) LoginPage() fiber.Handler {
 		return c.Render("login", nil)
 	}
 }
-func createPlainPass(id, pass, salt string) []byte {
-	data := append([]byte(id), []byte(pass)...)
-	return append(data, []byte(salt)...)
-}
-
-func createPass(id, pass, salt string) ([]byte, error) {
-	return bcrypt.GenerateFromPassword(createPlainPass(id, pass, salt), 11)
-}
-
-func comparePass(id, pass, salt string, hashed []byte) error {
-	return bcrypt.CompareHashAndPassword(hashed, createPlainPass(id, pass, salt))
-}
 
 func (s *Server) Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -76,7 +64,7 @@ func (s *Server) Login() fiber.Handler {
 		}
 
 		//pass vaildation
-		if err := comparePass(user.ID, user.Pass, "123", []byte(hashed)); err != nil {
+		if err := security.ComparePass(user.ID, user.Pass, "123", []byte(hashed)); err != nil {
 			fmt.Println(err)
 			c.Accepts("html")
 			c.Format(loginFailCode)
@@ -109,7 +97,7 @@ func (s *Server) Registration() fiber.Handler {
 		}
 		c.Accepts("html")
 
-		hashed, err := createPass(user.ID, user.Pass, "123")
+		hashed, err := security.CreatePass(user.ID, user.Pass, "123")
 		if err != nil {
 			fmt.Println(err)
 			panic(err)
