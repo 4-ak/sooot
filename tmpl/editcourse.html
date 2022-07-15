@@ -21,25 +21,11 @@
             <th>학점</th>
             <th>개설 학과</th>
         </tr>
-        {{range .Courses}}
-        <tr>
-            <td><a href="/course/2">UPDATE</a></td>
-            <td><a href="/course/3">DELETE</a></td>
-            <td>{{.Name}}</td>
-            <td>{{.Professor}}</td>
-            <td>3</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        {{end}}
         {{range .DB }}
         <tr>
             <td><a href="/course/2/{{.Uid}}">UPDATE</a></td>
-            <td><a href="/course/3">DELETE</a></td>
+            <td><a href="/course/d/{{.Uid}}">DELETE</a></td>
+            <td>{{.Uid}}</td>
             <td>{{.Name}}</td>
             <td>{{.Professor_name}}</td>
             <td>{{.Season}}</td>
@@ -48,7 +34,7 @@
             <td>{{.Category}}</td>
             <td></td>
             <td></td>
-            <td>{{.Uid}}</td>
+            
         </tr>
         {{end}}
     </table>

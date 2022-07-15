@@ -31,11 +31,12 @@ func NewServer(courses *domain.CourseList) *Server {
 	server.App.Get("/registration", server.RegistrationPage())
 	server.App.Post("/registration", server.Registration())
 
-	server.App.Get("/course/:num?", server.EditCourse())
-	server.App.Post("/course/:1", server.InsertDB())
-	server.App.Post("/course/:2/:id", server.UpdateDB())
-	server.App.Get("/course/:2/:id", server.test())
-	server.App.Post("/course/:3", server.DeleteDB())
+	server.App.Get("/course", server.EditCourse())
+	server.App.Get("/course/1", server.CreateCourse())
+	server.App.Post("/course/1", server.InsertDB())
+	server.App.Post("/course/2/:id", server.UpdateDB())
+	server.App.Get("/course/2/:id", server.UpdateCourse())
+	server.App.Get("/course/d/:id", server.DeleteDB())
 
 	return &server
 }
@@ -145,37 +146,6 @@ func (s *Server) Registration() fiber.Handler {
 	}
 }
 
-func (s *Server) EditCourse() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		switch c.Params("num") {
-		case "1":
-			return c.Render("createcourse", fiber.Map{
-				"DB": db.DB,
-			})
-		case "2":
-			uid, _ := strconv.Atoi(c.Params("id"))
-			return c.Render("updatecourse", fiber.Map{
-				"DB": s.SendDB(uid),
-			})
-		case "3":
-			return c.SendString("Delete")
-		}
-		return c.Render("editcourse", fiber.Map{
-			"Courses": s.List,
-			"DB":      s.SelectDB(),
-		})
-	}
-}
-
-func (s *Server) test() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		uid, _ := strconv.Atoi(c.Params("id"))
-		return c.Render("updatecourse", fiber.Map{
-			"DB": s.SendDB(uid),
-		})
-	}
-}
-
 type lecture struct {
 	Uid            int
 	Name           string
@@ -184,6 +154,31 @@ type lecture struct {
 	Grade          string
 	Credit         string
 	Category       string
+}
+
+func (s *Server) CreateCourse() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("createcourse", fiber.Map{
+			"DB": db.DB,
+		})
+	}
+}
+
+func (s *Server) EditCourse() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Render("editcourse", fiber.Map{
+			"DB": s.SelectDB(),
+		})
+	}
+}
+
+func (s *Server) UpdateCourse() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		uid, _ := strconv.Atoi(c.Params("id"))
+		return c.Render("updatecourse", fiber.Map{
+			"DB": s.SendDB(uid),
+		})
+	}
 }
 
 func (s *Server) SelectDB() []lecture {
@@ -239,6 +234,12 @@ func (s *Server) SendDB(uid int) lecture {
 
 func (s *Server) DeleteDB() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.SendString("test2")
+		uid, _ := strconv.Atoi(c.Params("id"))
+		_, err := db.DB.Exec("DELETE FROM lecture WHERE uid = ?", uid)
+		if err != nil {
+			fmt.Print(err)
+			return c.SendString("DELETE ERROR")
+		}
+		return c.Redirect("/course")
 	}
 }
