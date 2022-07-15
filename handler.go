@@ -7,6 +7,7 @@ import (
 	"github.com/4-ak/sooot/domain"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Server struct {
@@ -47,6 +48,27 @@ func (s *Server) ViewCourses() fiber.Handler {
 func (s *Server) LoginPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.Render("login", nil)
+	}
+}
+func createPlainPass(id, pass, salt string) ([]byte, error) {
+	data := append([]byte(id), []byte(pass)...)
+	data = append(data, []byte(salt)...)
+	return bcrypt.GenerateFromPassword(data, 1)
+}
+
+func createPass(id, pass, salt string) ([]byte, error) {
+	if pass, err := createPlainPass(id, pass, salt); err != nil {
+		return nil, err
+	} else {
+		return bcrypt.GenerateFromPassword(pass, 11)
+	}
+}
+
+func comparePass(id, pass, salt string, hashed []byte) error {
+	if pass, err := createPlainPass(id, pass, salt); err != nil {
+		return err
+	} else {
+		return bcrypt.CompareHashAndPassword(hashed, pass)
 	}
 }
 
@@ -107,7 +129,12 @@ func (s *Server) Registration() fiber.Handler {
 		}
 		c.Accepts("html")
 
-		if _, err := db.DB.Exec(`INSERT INTO user(id, pass, is_cert) VALUES(?,?,1)`, user.ID, user.Pass); err != nil {
+		hashed, err := createPass(user.ID, user.Pass, "123")
+		if err != nil {
+			fmt.Println(err)
+			panic(err)
+		}
+		if _, err := db.DB.Exec(`INSERT INTO user(id, pass, is_cert) VALUES(?,?,1)`, user.ID, hashed); err != nil {
 			fmt.Printf("[정보] 계정 생성 실패 : %v\n", err.Error())
 			fmt.Println(err)
 
