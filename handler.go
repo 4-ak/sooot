@@ -243,3 +243,9 @@ func (s *Server) DeleteDB() fiber.Handler {
 		return c.Redirect("/course")
 	}
 }
+
+func (s *Server) CreateReview() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.SendString("test1")
+	}
+}
