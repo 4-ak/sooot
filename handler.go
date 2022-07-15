@@ -50,26 +50,17 @@ func (s *Server) LoginPage() fiber.Handler {
 		return c.Render("login", nil)
 	}
 }
-func createPlainPass(id, pass, salt string) ([]byte, error) {
+func createPlainPass(id, pass, salt string) []byte {
 	data := append([]byte(id), []byte(pass)...)
-	data = append(data, []byte(salt)...)
-	return bcrypt.GenerateFromPassword(data, 1)
+	return append(data, []byte(salt)...)
 }
 
 func createPass(id, pass, salt string) ([]byte, error) {
-	if pass, err := createPlainPass(id, pass, salt); err != nil {
-		return nil, err
-	} else {
-		return bcrypt.GenerateFromPassword(pass, 11)
-	}
+	return bcrypt.GenerateFromPassword(createPlainPass(id, pass, salt), 11)
 }
 
 func comparePass(id, pass, salt string, hashed []byte) error {
-	if pass, err := createPlainPass(id, pass, salt); err != nil {
-		return err
-	} else {
-		return bcrypt.CompareHashAndPassword(hashed, pass)
-	}
+	return bcrypt.CompareHashAndPassword(hashed, createPlainPass(id, pass, salt))
 }
 
 func (s *Server) Login() fiber.Handler {
@@ -84,9 +75,29 @@ func (s *Server) Login() fiber.Handler {
 			return nil // TODO :500번대 메시지를 전송?
 		}
 
-		row := db.DB.QueryRow("SELECT uid FROM user WHERE id=? and pass=?", user.ID, user.Pass)
-		uid := -1
-		if err := row.Scan(&uid); err != nil {
+		var uid int = -1
+		var hashed string
+
+		row := db.DB.QueryRow("SELECT uid, pass FROM user WHERE id=?;", user.ID)
+		if err := row.Scan(&uid, &hashed); err != nil {
+			fmt.Println(err)
+			c.Accepts("html")
+			c.Format(`
+			<head>
+				<meta charset="UTF-8">
+				<script>
+					if(!alert("존재하지 않는 계정이거나, 비밀번호가 틀렸습니다.")) {
+						window.location = "/login";
+					}
+				</script>
+			</head>
+			`)
+			return c.SendStatus(200)
+		}
+
+		//pass vaildation
+		if err := comparePass(user.ID, user.Pass, "123", []byte(hashed)); err != nil {
+			fmt.Println(err)
 			c.Accepts("html")
 			c.Format(`
 			<head>
