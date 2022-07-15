@@ -36,7 +36,21 @@
             <td></td>
         </tr>
         {{end}}
-        {{ .DB }}
+        {{range .DB }}
+        <tr>
+            <td><a href="/course/2/{{.Uid}}">UPDATE</a></td>
+            <td><a href="/course/3">DELETE</a></td>
+            <td>{{.Name}}</td>
+            <td>{{.Professor_name}}</td>
+            <td>{{.Season}}</td>
+            <td>{{.Grade}}</td>
+            <td>{{.Credit}}</td>
+            <td>{{.Category}}</td>
+            <td></td>
+            <td></td>
+            <td>{{.Uid}}</td>
+        </tr>
+        {{end}}
     </table>
 </body>
 </html>

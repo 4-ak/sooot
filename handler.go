@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/domain"
@@ -29,8 +30,12 @@ func NewServer(courses *domain.CourseList) *Server {
 	server.App.Post("/login", server.Login())
 	server.App.Get("/registration", server.RegistrationPage())
 	server.App.Post("/registration", server.Registration())
+
 	server.App.Get("/course/:num?", server.EditCourse())
 	server.App.Post("/course/:1", server.InsertDB())
+	server.App.Post("/course/:2/:id", server.UpdateDB())
+	server.App.Get("/course/:2/:id", server.test())
+	server.App.Post("/course/:3", server.DeleteDB())
 
 	return &server
 }
@@ -148,18 +153,31 @@ func (s *Server) EditCourse() fiber.Handler {
 				"DB": db.DB,
 			})
 		case "2":
-			return c.SendString("Update")
+			uid, _ := strconv.Atoi(c.Params("id"))
+			return c.Render("updatecourse", fiber.Map{
+				"DB": s.SendDB(uid),
+			})
 		case "3":
 			return c.SendString("Delete")
 		}
 		return c.Render("editcourse", fiber.Map{
 			"Courses": s.List,
-			"DB":      s.SelectDB(1),
+			"DB":      s.SelectDB(),
+		})
+	}
+}
+
+func (s *Server) test() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		uid, _ := strconv.Atoi(c.Params("id"))
+		return c.Render("updatecourse", fiber.Map{
+			"DB": s.SendDB(uid),
 		})
 	}
 }
 
 type lecture struct {
+	Uid            int
 	Name           string
 	Professor_name string
 	Season         string
@@ -168,15 +186,19 @@ type lecture struct {
 	Category       string
 }
 
-func (s *Server) SelectDB(uid int) lecture {
-	var lect lecture
-	rows := db.DB.QueryRow("SELECT * from lecture where uid = ?", uid)
-	n := 0
-	err := rows.Scan(&n, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
+func (s *Server) SelectDB() []lecture {
+
+	row, err := db.DB.Query("SELECT * from lecture")
+	arr := make([]lecture, 0)
+	for row.Next() {
+		var lect lecture
+		row.Scan(&lect.Uid, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
+		arr = append(arr, lect)
+	}
 	if err != nil {
 		fmt.Println(err)
 	}
-	return lect
+	return arr
 }
 
 func (s *Server) InsertDB() fiber.Handler {
@@ -189,5 +211,34 @@ func (s *Server) InsertDB() fiber.Handler {
 			return c.SendString("INSERT ERROR")
 		}
 		return c.Redirect("/course")
+	}
+}
+
+func (s *Server) UpdateDB() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		uid, _ := strconv.Atoi(c.Params("id"))
+		var lect lecture
+		c.BodyParser(&lect)
+		_, err := db.DB.Exec(`UPDATE lecture 
+		SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  WHERE uid = ?`, lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category, uid)
+		if err != nil {
+			fmt.Print(err)
+			return c.SendString("UPDATE ERROR")
+		}
+		return c.Redirect("/course")
+	}
+}
+
+func (s *Server) SendDB(uid int) lecture {
+	rows := db.DB.QueryRow("SELECT * FROM lecture WHERE uid = ?", uid)
+	var lect lecture
+	rows.Scan(&lect.Uid, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
+	return lect
+
+}
+
+func (s *Server) DeleteDB() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.SendString("test2")
 	}
 }
