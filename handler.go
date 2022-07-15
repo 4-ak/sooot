@@ -246,6 +246,6 @@ func (s *Server) DeleteDB() fiber.Handler {
 
 func (s *Server) CreateReview() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.SendString("test")
+		return c.SendString("test1")
 	}
 }
