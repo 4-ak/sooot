@@ -50,6 +50,23 @@ func (s *Server) ViewCourses() fiber.Handler {
 	}
 }
 
+
+func (s *Server) EditCourse() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		switch c.Params("num") {
+		case "1":
+			return c.Render("createcourse", fiber.Map{
+				"DB": db.DB,
+			})
+		case "2":
+			return c.SendString("Update")
+		case "3":
+			return c.SendString("Delete")
+		}
+		return c.Render("editcourse", fiber.Map{
+			"Courses": s.List,
+			"DB":      s.SelectDB(1),
+		})
 func (s *Server) LoginPage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.Render("login", nil)
