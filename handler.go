@@ -249,3 +249,7 @@ func (s *Server) CreateReview() fiber.Handler {
 		return c.SendString("test1")
 	}
 }
+
+func (s *Server) test() {
+
+}
