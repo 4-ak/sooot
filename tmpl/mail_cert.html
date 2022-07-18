@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대학 이메일 인증</title>
+    <script defer>
+        
+    </script>
+</head>
+<body>
+    <h3>대학 이메일을 통한 인증이 필요합니다.</h3>
+    <form action="/mail-cert" method="post">
+        <div id="mailarea">
+            <input type="email" name="mailID" id="mailbox">
+            <button>인증번호 발송</button>
+        </div>
+        
+        <div id="keyarea">
+            <input type="text" name="certKey" id="certKeybox">
+            <button>인증</button>
+        </div>
+        
+    </form>
+</body>
+</html>
