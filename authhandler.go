@@ -34,7 +34,7 @@ const (
 )
 
 type Account struct {
-	ID   string `form:"email_id"`
+	ID   string
 	Pass string `form:"pass"`
 	Salt string
 }
@@ -93,10 +93,18 @@ func (s *Server) Registration() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var user Account
 
+		mail, err := security.DecrptionWithBase64(c.Cookies("mail", ""))
+		if err != nil {
+			fmt.Println(err)
+			panic(err)
+		}
+
 		if err := c.BodyParser(&user); err != nil {
 			fmt.Println(err)
 			return nil // TODO :500번대 메시지를 전송?
 		}
+
+		user.ID = string(mail)
 		c.Accepts("html")
 
 		hashed, err := security.CreatePass(user.ID, user.Pass, "123")
