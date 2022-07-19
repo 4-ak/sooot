@@ -3,23 +3,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>대학 이메일 인증</title>
+    <style>
+        #keyarea {
+            display: none;
+        }
+    </style>
     <script defer>
-        
+        let a;
+        function mailSubmit() {
+            fetch('/mail-cert', {
+                method:'POST',
+                cache:'no-cache',
+                credentials:"include",
+                headers: {
+                    'Content-Type':"application/json"
+                },
+                body: JSON.stringify({
+                    mail:document.getElementById("mailbox").value
+                })
+            })
+            .then((response) => {
+                document.getElementById("keyarea").style.display="block";
+                document.getElementById("MailMsg").innerText="메일 발송에 성공했습니다."
+            })
+            .catch(error => console.log(error));
+            return false;
+        }
+
+        function keyCert() {
+            fetch('/key-cert', {
+                method:'POST',
+                cache:'no-cache',
+                credentials:"include",
+                redirect:"follow",
+                headers: {
+                    'Content-Type':"application/json"
+                },
+                body: JSON.stringify({
+                    key:document.getElementById("certKeybox").value
+                })
+            })
+            .then((response) => {
+                a=response;
+                console.log("성공");
+                document.getElementById("KeyCertMsg").innerText="성공!";
+                window.location.href = response.url;
+            })
+            .catch((error) => {
+                console.log("실패");
+                console.log(error);
+                document.getElementById("KeyCertMsg").innerText="번호를 잘못입력했습니다.";                
+            });
+            return false;
+        }
     </script>
 </head>
 <body>
     <h3>대학 이메일을 통한 인증이 필요합니다.</h3>
-    <form action="/mail-cert" method="post">
-        <div id="mailarea">
-            <input type="email" name="mailID" id="mailbox">
-            <button>인증번호 발송</button>
-        </div>
-        
-        <div id="keyarea">
-            <input type="text" name="certKey" id="certKeybox">
-            <button>인증</button>
-        </div>
-        
+    <form action="/mail-cert" method="post" onsubmit="return mailSubmit()" id="mailarea">
+        <input type="text" name="mailID" id="mailbox">@live.wsu.ac.kr
+        <button>인증번호 발송</button>
     </form>
+    <span id="MailMsg"></span>
+    <form action="/key-cert", id="keyarea" onsubmit="return keyCert()">
+        <input type="text" name="certKey" id="certKeybox">
+        <span id="KeyCertMsg"></span><br>
+        <button>인증</button>
+    </form>
+    
 </body>
 </html>
