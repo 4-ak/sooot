@@ -122,7 +122,16 @@ func (s *Server) Registration() fiber.Handler {
 
 		fmt.Printf("[정보] 계정 생성 성공 : %v\n", user.ID)
 
-		c.Format(registerFailCode)
+		c.Format(`
+		<head>
+			<meta charset="UTF-8">
+			<script>
+				if(!alert("가입이 완료되었습니다!")) {
+					window.location="/login";
+				}
+			</script>
+		</head>
+		`)
 		return c.SendStatus(201)
 	}
 }
