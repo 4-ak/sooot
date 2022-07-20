@@ -148,13 +148,20 @@ func (s *Server) MailSend(c *fiber.Ctx) error {
 		fmt.Println(err)
 		return c.SendStatus(404)
 	}
+
+	sertKey := GenerateCertKey()
+	// if err := SendMail(mail.Mail+"@live.wsu.ac.kr", sertKey); err != nil {
+	// 	fmt.Println(err)
+	// 	panic(err)
+	// }
+
 	cypherMail, err := security.EncrpytionWithBase64([]byte(mail.Mail))
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
 
-	cypherKey, err := security.EncrpytionWithBase64([]byte(GenerateCertKey()))
+	cypherKey, err := security.EncrpytionWithBase64([]byte(sertKey))
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
