@@ -34,7 +34,7 @@ const (
 )
 
 type Account struct {
-	ID   string
+	ID   string `form:"email_id"`
 	Pass string `form:"pass"`
 	Salt string
 }
