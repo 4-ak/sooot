@@ -31,7 +31,7 @@ func NewServer(courses *domain.CourseList) *Server {
 	server.App.Get("/registration", server.RegistrationPage())
 	server.App.Post("/registration", server.Registration())
 
-	server.App.Get("/course", server.EditCourse())
+	server.App.Get("/course", server.Course())
 	server.App.Get("/course/1", server.CreateCourse())
 	server.App.Post("/course/1", server.InsertCourseDB())
 	server.App.Post("/course/2/:id", server.UpdateCourseDB())
@@ -165,15 +165,16 @@ type lecture struct {
 
 func (s *Server) CreateCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("createcourse", fiber.Map{
-			"DB": db.DB,
+		return c.Render("editcourse", fiber.Map{
+			"DB":     db.DB,
+			"STATUS": false,
 		})
 	}
 }
 
-func (s *Server) EditCourse() fiber.Handler {
+func (s *Server) Course() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("editcourse", fiber.Map{
+		return c.Render("course", fiber.Map{
 			"DB": s.SelectCourseDB(),
 		})
 	}
@@ -182,8 +183,9 @@ func (s *Server) EditCourse() fiber.Handler {
 func (s *Server) UpdateCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		uid, _ := strconv.Atoi(c.Params("id"))
-		return c.Render("updatecourse", fiber.Map{
-			"DB": s.SendCourseDB(uid),
+		return c.Render("editcourse", fiber.Map{
+			"DB":     s.SendCourseDB(uid),
+			"STATUS": true,
 		})
 	}
 }
@@ -207,8 +209,10 @@ func (s *Server) InsertCourseDB() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var lect lecture
 		c.BodyParser(&lect)
-		_, err := db.DB.Exec(`INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
-		VALUES(?, ?, ?, ?, ?, ?)`, lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
+		_, err := db.DB.Exec(`
+		INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
+		VALUES(?, ?, ?, ?, ?, ?)`,
+			lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
 		if err != nil {
 			return c.SendString("INSERT ERROR")
 		}
@@ -221,8 +225,12 @@ func (s *Server) UpdateCourseDB() fiber.Handler {
 		uid, _ := strconv.Atoi(c.Params("id"))
 		var lect lecture
 		c.BodyParser(&lect)
-		_, err := db.DB.Exec(`UPDATE lecture 
-		SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  WHERE uid = ?`, lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category, uid)
+		_, err := db.DB.Exec(`
+		UPDATE lecture 
+		SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  
+		WHERE uid = ?`,
+			lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category,
+			uid)
 		if err != nil {
 			fmt.Print(err)
 			return c.SendString("UPDATE ERROR")
@@ -270,15 +278,17 @@ func (s *Server) Review(c *fiber.Ctx) error {
 }
 
 func (s *Server) CreateReview(c *fiber.Ctx) error {
-	return c.Render("createreview", fiber.Map{
-		"DB": db.DB,
+	return c.Render("editreview", fiber.Map{
+		"DB":     db.DB,
+		"STATUS": false,
 	})
 }
 
 func (s *Server) UpdateReview(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
-	return c.Render("updatereview", fiber.Map{
-		"DB": s.SendReviewDB(uid),
+	return c.Render("editreview", fiber.Map{
+		"DB":     s.SendReviewDB(uid),
+		"STATUS": true,
 	})
 }
 
@@ -293,8 +303,10 @@ func (s *Server) InsertReview(c *fiber.Ctx) error {
 	var rev review
 	lect_id := (c.Params("id"))
 	c.BodyParser(&rev)
-	_, err := db.DB.Exec(`INSERT INTO review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation) 
-		VALUES(?, ?, ?, ?, ?, ?)`, lect_id, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation)
+	_, err := db.DB.Exec(`
+	INSERT INTO review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation) 
+		VALUES(?, ?, ?, ?, ?, ?)`,
+		lect_id, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation)
 	if err != nil {
 		return c.SendString(err.Error())
 	}
@@ -302,7 +314,7 @@ func (s *Server) InsertReview(c *fiber.Ctx) error {
 }
 
 func (s *Server) SelectReviewDB(lectid string) []review {
-	row, err := db.DB.Query("SELECT * from review where lecture_id = ?", lectid)
+	row, err := db.DB.Query("SELECT * from review WHERE lecture_id = ?", lectid)
 	arr := make([]review, 0)
 	for row.Next() {
 		var rev review
@@ -321,8 +333,12 @@ func (s *Server) UpdateReviewDB(c *fiber.Ctx) error {
 	lect_id := c.Params("lectid")
 	var rev review
 	c.BodyParser(&rev)
-	_, err := db.DB.Exec(`UPDATE review 
-		SET beneficial_point = ?, honey_point = ?, professor_point = ?, is_team = ?, is_presentation = ? WHERE uid = ?`, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation, uid)
+	_, err := db.DB.Exec(`
+	UPDATE review
+	SET beneficial_point = ?, honey_point = ?, professor_point = ?, is_team = ?, is_presentation = ? 
+	WHERE uid = ?`,
+		rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation,
+		uid)
 	if err != nil {
 		fmt.Print(err)
 		return c.Format(fmt.Sprintf(`

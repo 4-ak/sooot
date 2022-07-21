@@ -3,40 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>editcourse</title>
+    <title>{{if .STATUS}}Update Course{{else}}Create Course{{end}}</title>
 </head>
 <body>
-    <h1><a href="/course/1">Create Data</a></h1>
+<h1>{{if .STATUS}}Update Course{{else}}Create Course{{end}}</h1>
+<form method="post">
     <table border="1">
         <tr>
-            <th>Update</th>
-            <th>Delete</th>
-            <th>uid</th>
-            <th>강의 이름</th>
-            <th>교수명</th>
-            <th>리뷰 평점</th>
-            <th>리뷰 개수</th>
-            <th>학기</th>
-            <th>학년</th>
-            <th>학점</th>
-            <th>개설 학과</th>
+            <td>Name</td>
+            {{if .STATUS}}<td>{{.DB.Name}}</td>{{else}}{{end}}
+            <td><input type="text" name="Name"></td>    
         </tr>
-        {{range .DB }}
         <tr>
-            <td><a href="/course/2/{{.Uid}}">UPDATE</a></td>
-            <td><a href="/course/d/{{.Uid}}">DELETE</a></td>
-            <td>{{.Uid}}</td>
-            <td><a href="/review/{{.Uid}}">{{.Name}}</a></td>
-            <td>{{.Professor_name}}</td>
-            <td>{{.Season}}</td>
-            <td>{{.Grade}}</td>
-            <td>{{.Credit}}</td>
-            <td>{{.Category}}</td>
-            <td></td>
-            <td></td>
-            
+            <td>Professor_name</td>
+            {{if .STATUS}}<td>{{.DB.Professor_name}}</td>{{else}}{{end}}
+            <td><input type="text" name="Professor_name"></td>
         </tr>
-        {{end}}
+        <tr>
+            <td>Season</td>
+            {{if .STATUS}}<td>{{.DB.Season}}</td>{{else}}{{end}}
+            <td><input type="text" name="Season" value="Season"></td>
+        </tr>
+        <tr>
+            <td>Grade</td>
+            {{if .STATUS}}<td>{{.DB.Grade}}</td>{{else}}{{end}}
+            <td><input type="text" name="Grade" value="Grade"></td>
+        </tr>
+        <tr>
+            <td>Credit</td>
+            {{if .STATUS}}<td>{{.DB.Credit}}</td>{{else}}{{end}}
+            <td><input type="text" name="Credit" value="Credit"></td>
+        </tr>
+        <tr>
+            <td>Category</td>
+            {{if .STATUS}}<td>{{.DB.Category}}</td>{{else}}{{end}}
+            <td><input type="text" name="Category" value="Category"></td>
+        </tr>
     </table>
+    <input type="submit">
+
+</form>
 </body>
 </html>

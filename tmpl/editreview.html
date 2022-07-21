@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{if .STATUS}}Update Review{{else}}Create Review{{end}}</title>
 </head>
 <body>
-<h1>Update Review</h1>
+<h1>{{if .STATUS}}Update Review{{else}}Create Review{{end}}</h1>
 <form method="post">
     <table border="1">
         <tr>
             <td>Beneficial_point</td>
-            <td>{{.DB.Beneficial_point}}</td>
-            <td><input type="text" name="Beneficial_point"></td>    
+            {{if .STATUS}}<td>{{.DB.Beneficial_point}}</td>{{else}}{{end}}
+            <td><input type="text" name="Beneficial_point"></td>
         </tr>
         <tr>
             <td>Honey_point</td>
-            <td>{{.DB.Honey_point}}</td>
+            {{if .STATUS}}<td>{{.DB.Honey_point}}</td>{{else}}{{end}}
             <td><input type="text" name="Honey_point" value="4"></td>
         </tr>
         <tr>
             <td>Professor_point</td>
-            <td>{{.DB.Professor_point}}</td>
+            {{if .STATUS}}<td>{{.DB.Professor_point}}</td>{{else}}{{end}}
             <td><input type="text" name="Professor_point" value="5"></td>
         </tr>
         <tr>
             <td>Is_team</td>
-            <td>{{.DB.Is_team}}</td>
+            {{if .STATUS}}<td>{{.DB.Is_team}}</td>{{else}}{{end}}
             <td><input type="radio" name="Is_team" checked="checked" value="1">true</td>
             <td><input type="radio" name="Is_team" value="0">false</td>
         </tr>
         <tr>
             <td>Is_presentation</td>
-            <td>{{.DB.Is_presentation}}</td>
+            {{if .STATUS}}<td>{{.DB.Is_presentation}}</td>{{else}}{{end}}
             <td><input type="radio" name="Is_presentation" checked="checked" value="1">true</td>
             <td><input type="radio" name="Is_presentation" value="0">false</td>
         </tr>
