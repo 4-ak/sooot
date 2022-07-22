@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{if .STATUS}}Update Course{{else}}Create Course{{end}}</title>
+    <title>{{if .SelectTemp}}Update Course{{else}}Create Course{{end}}</title>
 </head>
 <body>
-<h1>{{if .STATUS}}Update Course{{else}}Create Course{{end}}</h1>
+<h1>{{if .SelectTemp}}Update Course{{else}}Create Course{{end}}</h1>
 <form method="post">
     <table border="1">
         <tr>
             <td>Name</td>
-            {{if .STATUS}}<td>{{.DB.Name}}</td>{{else}}{{end}}
+            {{if .SelectTemp}}<td>{{.CourseData.Name}}</td>{{else}}{{end}}
             <td><input type="text" name="Name"></td>    
         </tr>
         <tr>
             <td>Professor_name</td>
-            {{if .STATUS}}<td>{{.DB.Professor_name}}</td>{{else}}{{end}}
+            {{if .SelectTemp}}<td>{{.CourseData.Professor_name}}</td>{{else}}{{end}}
             <td><input type="text" name="Professor_name"></td>
         </tr>
         <tr>
             <td>Season</td>
-            {{if .STATUS}}<td>{{.DB.Season}}</td>{{else}}{{end}}
+            {{if .SelectTemp}}<td>{{.CourseData.Season}}</td>{{else}}{{end}}
             <td><input type="text" name="Season" value="Season"></td>
         </tr>
         <tr>
             <td>Grade</td>
-            {{if .STATUS}}<td>{{.DB.Grade}}</td>{{else}}{{end}}
+            {{if .SelectTemp}}<td>{{.CourseData.Grade}}</td>{{else}}{{end}}
             <td><input type="text" name="Grade" value="Grade"></td>
         </tr>
         <tr>
             <td>Credit</td>
-            {{if .STATUS}}<td>{{.DB.Credit}}</td>{{else}}{{end}}
+            {{if .SelectTemp}}<td>{{.CourseData.Credit}}</td>{{else}}{{end}}
             <td><input type="text" name="Credit" value="Credit"></td>
         </tr>
         <tr>
             <td>Category</td>
-            {{if .STATUS}}<td>{{.DB.Category}}</td>{{else}}{{end}}
+            {{if .SelectTemp}}<td>{{.CourseData.Category}}</td>{{else}}{{end}}
             <td><input type="text" name="Category" value="Category"></td>
         </tr>
     </table>

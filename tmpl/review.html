@@ -19,7 +19,7 @@
             <th>팀플 여부</th>
             <th>발표 여부</th>
         </tr>
-        {{range .DB }}
+        {{range .ReviewData }}
         <tr>
             <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/u">UPDATE</a></td>
             <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/d">DELETE</a></td>

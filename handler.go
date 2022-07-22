@@ -166,8 +166,8 @@ type lecture struct {
 func (s *Server) CreateCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.Render("editcourse", fiber.Map{
-			"DB":     db.DB,
-			"STATUS": false,
+			"CourseData": db.DB,
+			"SelectTemp": false,
 		})
 	}
 }
@@ -175,7 +175,7 @@ func (s *Server) CreateCourse() fiber.Handler {
 func (s *Server) Course() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.Render("course", fiber.Map{
-			"DB": s.SelectCourseDB(),
+			"CourseData": s.SelectCourseDB(),
 		})
 	}
 }
@@ -184,8 +184,8 @@ func (s *Server) UpdateCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		uid, _ := strconv.Atoi(c.Params("id"))
 		return c.Render("editcourse", fiber.Map{
-			"DB":     s.SendCourseDB(uid),
-			"STATUS": true,
+			"CourseData": s.SendCourseDB(uid),
+			"SelectTemp": true,
 		})
 	}
 }
@@ -272,23 +272,23 @@ func (s *Server) Review(c *fiber.Ctx) error {
 	lectid := (c.Params("id"))
 	result := s.SelectReviewDB(lectid)
 	return c.Render("review", fiber.Map{
-		"DB":     result,
-		"Lectid": lectid,
+		"ReviewData": result,
+		"Lectid":     lectid,
 	})
 }
 
 func (s *Server) CreateReview(c *fiber.Ctx) error {
 	return c.Render("editreview", fiber.Map{
-		"DB":     db.DB,
-		"STATUS": false,
+		"ReviewData": db.DB,
+		"SelectTemp": false,
 	})
 }
 
 func (s *Server) UpdateReview(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
 	return c.Render("editreview", fiber.Map{
-		"DB":     s.SendReviewDB(uid),
-		"STATUS": true,
+		"ReviewData": s.SendReviewDB(uid),
+		"SelectTemp": true,
 	})
 }
 
