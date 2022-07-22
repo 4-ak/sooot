@@ -167,7 +167,7 @@ func (s *Server) CreateCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.Render("editcourse", fiber.Map{
 			"CourseData": db.DB,
-			"SelectTemp": false,
+			"isUpdate":   false,
 		})
 	}
 }
@@ -185,7 +185,7 @@ func (s *Server) UpdateCourse() fiber.Handler {
 		uid, _ := strconv.Atoi(c.Params("id"))
 		return c.Render("editcourse", fiber.Map{
 			"CourseData": s.SendCourseDB(uid),
-			"SelectTemp": true,
+			"isUpdate":   true,
 		})
 	}
 }
@@ -280,7 +280,7 @@ func (s *Server) Review(c *fiber.Ctx) error {
 func (s *Server) CreateReview(c *fiber.Ctx) error {
 	return c.Render("editreview", fiber.Map{
 		"ReviewData": db.DB,
-		"SelectTemp": false,
+		"isUpdate":   false,
 	})
 }
 
@@ -288,7 +288,7 @@ func (s *Server) UpdateReview(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
 	return c.Render("editreview", fiber.Map{
 		"ReviewData": s.SendReviewDB(uid),
-		"SelectTemp": true,
+		"isUpdate":   true,
 	})
 }
 
