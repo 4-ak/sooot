@@ -6,6 +6,7 @@ import (
 
 	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/domain"
+	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 )
@@ -16,6 +17,8 @@ type Server struct {
 }
 
 func NewServer(courses *domain.CourseList) *Server {
+	security.KeyGen()
+
 	engine := html.New("./tmpl", ".html")
 	server := Server{
 		CourseList: courses,
@@ -28,6 +31,11 @@ func NewServer(courses *domain.CourseList) *Server {
 	server.App.Get("/login", server.LoginPage())
 
 	server.App.Post("/login", server.Login())
+
+	server.App.Get("/mail-cert", server.MailCertPage)
+	server.App.Post("/mail-cert", server.MailSend)
+	server.App.Post("/key-cert", server.KeyCert)
+
 	server.App.Get("/registration", server.RegistrationPage())
 	server.App.Post("/registration", server.Registration())
 
