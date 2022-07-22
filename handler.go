@@ -31,12 +31,19 @@ func NewServer(courses *domain.CourseList) *Server {
 	server.App.Get("/registration", server.RegistrationPage())
 	server.App.Post("/registration", server.Registration())
 
-	server.App.Get("/course", server.EditCourse())
+	server.App.Get("/course", server.Course())
 	server.App.Get("/course/1", server.CreateCourse())
-	server.App.Post("/course/1", server.InsertDB())
-	server.App.Post("/course/2/:id", server.UpdateDB())
+	server.App.Post("/course/1", server.InsertCourseDB())
+	server.App.Post("/course/2/:id", server.UpdateCourseDB())
 	server.App.Get("/course/2/:id", server.UpdateCourse())
-	server.App.Get("/course/d/:id", server.DeleteDB())
+	server.App.Get("/course/d/:id", server.DeleteCourseDB())
+
+	server.App.Get("/review/:id", server.Review)
+	server.App.Get("/review/:id/c", server.CreateReview)
+	server.App.Post("/review/:id/c", server.InsertReview)
+	server.App.Get("/review/:lectid/:uid/u", server.UpdateReview)
+	server.App.Post("/review/:lectid/:uid/u", server.UpdateReviewDB)
+	server.App.Get("/review/:lectid/:uid/d", server.DeleteReviewDB)
 
 	return &server
 }
@@ -62,16 +69,17 @@ type lecture struct {
 
 func (s *Server) CreateCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("createcourse", fiber.Map{
-			"DB": db.DB,
+		return c.Render("editcourse", fiber.Map{
+			"CourseData": db.DB,
+			"isUpdate":   false,
 		})
 	}
 }
 
-func (s *Server) EditCourse() fiber.Handler {
+func (s *Server) Course() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Render("editcourse", fiber.Map{
-			"DB": s.SelectDB(),
+		return c.Render("course", fiber.Map{
+			"CourseData": s.SelectCourseDB(),
 		})
 	}
 }
@@ -79,13 +87,14 @@ func (s *Server) EditCourse() fiber.Handler {
 func (s *Server) UpdateCourse() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		uid, _ := strconv.Atoi(c.Params("id"))
-		return c.Render("updatecourse", fiber.Map{
-			"DB": s.SendDB(uid),
+		return c.Render("editcourse", fiber.Map{
+			"CourseData": s.SendCourseDB(uid),
+			"isUpdate":   true,
 		})
 	}
 }
 
-func (s *Server) SelectDB() []lecture {
+func (s *Server) SelectCourseDB() []lecture {
 
 	row, err := db.DB.Query("SELECT * from lecture")
 	arr := make([]lecture, 0)
@@ -100,12 +109,14 @@ func (s *Server) SelectDB() []lecture {
 	return arr
 }
 
-func (s *Server) InsertDB() fiber.Handler {
+func (s *Server) InsertCourseDB() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var lect lecture
 		c.BodyParser(&lect)
-		_, err := db.DB.Exec(`INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
-		VALUES(?, ?, ?, ?, ?, ?)`, lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
+		_, err := db.DB.Exec(`
+		INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
+		VALUES(?, ?, ?, ?, ?, ?)`,
+			lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
 		if err != nil {
 			return c.SendString("INSERT ERROR")
 		}
@@ -113,13 +124,17 @@ func (s *Server) InsertDB() fiber.Handler {
 	}
 }
 
-func (s *Server) UpdateDB() fiber.Handler {
+func (s *Server) UpdateCourseDB() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		uid, _ := strconv.Atoi(c.Params("id"))
 		var lect lecture
 		c.BodyParser(&lect)
-		_, err := db.DB.Exec(`UPDATE lecture 
-		SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  WHERE uid = ?`, lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category, uid)
+		_, err := db.DB.Exec(`
+		UPDATE lecture 
+		SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  
+		WHERE uid = ?`,
+			lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category,
+			uid)
 		if err != nil {
 			fmt.Print(err)
 			return c.SendString("UPDATE ERROR")
@@ -128,15 +143,14 @@ func (s *Server) UpdateDB() fiber.Handler {
 	}
 }
 
-func (s *Server) SendDB(uid int) lecture {
+func (s *Server) SendCourseDB(uid int) lecture {
 	rows := db.DB.QueryRow("SELECT * FROM lecture WHERE uid = ?", uid)
 	var lect lecture
 	rows.Scan(&lect.Uid, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
 	return lect
-
 }
 
-func (s *Server) DeleteDB() fiber.Handler {
+func (s *Server) DeleteCourseDB() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		uid, _ := strconv.Atoi(c.Params("id"))
 		_, err := db.DB.Exec("DELETE FROM lecture WHERE uid = ?", uid)
@@ -148,8 +162,111 @@ func (s *Server) DeleteDB() fiber.Handler {
 	}
 }
 
-func (s *Server) CreateReview() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		return c.SendString("test1")
+type review struct {
+	Uid              int
+	Lecture_id       int
+	Beneficial_point int  //1~5
+	Honey_point      int  //1~5
+	Professor_point  int  //1~5
+	Is_team          bool //0, 1
+	Is_presentation  bool //0, 1
+}
+
+func (s *Server) Review(c *fiber.Ctx) error {
+	lectid := (c.Params("id"))
+	result := s.SelectReviewDB(lectid)
+	return c.Render("review", fiber.Map{
+		"ReviewData": result,
+		"Lectid":     lectid,
+	})
+}
+
+func (s *Server) CreateReview(c *fiber.Ctx) error {
+	return c.Render("editreview", fiber.Map{
+		"ReviewData": db.DB,
+		"isUpdate":   false,
+	})
+}
+
+func (s *Server) UpdateReview(c *fiber.Ctx) error {
+	uid, _ := strconv.Atoi(c.Params("id"))
+	return c.Render("editreview", fiber.Map{
+		"ReviewData": s.SendReviewDB(uid),
+		"isUpdate":   true,
+	})
+}
+
+func (s *Server) SendReviewDB(uid int) review {
+	rows := db.DB.QueryRow("SELECT * FROM review WHERE lecture_id = ?", uid)
+	var rev review
+	rows.Scan(&rev.Uid, &rev.Beneficial_point, &rev.Honey_point, &rev.Professor_point, &rev.Is_team, &rev.Is_presentation)
+	return rev
+}
+
+func (s *Server) InsertReview(c *fiber.Ctx) error {
+	var rev review
+	lect_id := (c.Params("id"))
+	c.BodyParser(&rev)
+	_, err := db.DB.Exec(`
+	INSERT INTO review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation) 
+		VALUES(?, ?, ?, ?, ?, ?)`,
+		lect_id, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation)
+	if err != nil {
+		return c.SendString(err.Error())
 	}
+	return c.Redirect("/review/" + lect_id)
+}
+
+func (s *Server) SelectReviewDB(lectid string) []review {
+	row, err := db.DB.Query("SELECT * from review WHERE lecture_id = ?", lectid)
+	arr := make([]review, 0)
+	for row.Next() {
+		var rev review
+		row.Scan(&rev.Uid, &rev.Lecture_id, &rev.Beneficial_point, &rev.Honey_point, &rev.Professor_point, &rev.Is_team, &rev.Is_presentation)
+		arr = append(arr, rev)
+	}
+	if err != nil || len(arr) == 0 {
+		fmt.Println(err)
+		return nil
+	}
+	return arr
+}
+
+func (s *Server) UpdateReviewDB(c *fiber.Ctx) error {
+	uid := c.Params("uid")
+	lect_id := c.Params("lectid")
+	var rev review
+	c.BodyParser(&rev)
+	_, err := db.DB.Exec(`
+	UPDATE review
+	SET beneficial_point = ?, honey_point = ?, professor_point = ?, is_team = ?, is_presentation = ? 
+	WHERE uid = ?`,
+		rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation,
+		uid)
+	if err != nil {
+		fmt.Print(err)
+		return c.Format(fmt.Sprintf(`
+		<head>
+			<meta charset="UTF-8">
+			<script>
+				if(!alert("값을 다시 입력해주세요")) {
+					window.location="/review/%v/%v/u";
+				}
+			</script>
+		</head>
+		`, lect_id, uid))
+		// return c.Redirect("review/" + lect_id + "/" + uid + "/u")
+	}
+	return c.Redirect("/review/" + lect_id)
+}
+
+func (s *Server) DeleteReviewDB(c *fiber.Ctx) error {
+	uid := c.Params("uid")
+	lect_id := c.Params("lectid")
+	_, err := db.DB.Exec("DELETE FROM review WHERE uid = ?", uid)
+	if err != nil {
+		fmt.Print(err)
+		return c.SendString("DELETE ERROR")
+	}
+	return c.Redirect("/review/" + lect_id)
 }
