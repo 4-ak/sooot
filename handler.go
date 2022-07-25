@@ -28,30 +28,31 @@ func NewServer(courses *domain.CourseList) *Server {
 	}
 
 	server.App.Get("/", server.ViewCourses())
-	server.App.Get("/login", server.LoginPage)
 
-	server.App.Post("/login", server.Login)
+	auth := server.App.Group("/")
+	auth.Get("/login", server.LoginPage)
+	auth.Post("/login", server.Login)
+	auth.Get("/mail-cert", server.MailCertPage)
+	auth.Post("/mail-cert", server.MailSend)
+	auth.Post("/key-cert", server.KeyCert)
+	auth.Get("/registration", server.RegistrationPage)
+	auth.Post("/registration", server.Registration)
 
-	server.App.Get("/mail-cert", server.MailCertPage)
-	server.App.Post("/mail-cert", server.MailSend)
-	server.App.Post("/key-cert", server.KeyCert)
+	course := server.App.Group("/course")
+	course.Get("/", server.Course())
+	course.Get("/1", server.CreateCourse())
+	course.Post("/1", server.InsertCourseDB())
+	course.Post("/2/:id", server.UpdateCourseDB())
+	course.Get("/2/:id", server.UpdateCourse())
+	course.Get("/d/:id", server.DeleteCourseDB())
 
-	server.App.Get("/registration", server.RegistrationPage)
-	server.App.Post("/registration", server.Registration)
-
-	server.App.Get("/course", server.Course())
-	server.App.Get("/course/1", server.CreateCourse())
-	server.App.Post("/course/1", server.InsertCourseDB())
-	server.App.Post("/course/2/:id", server.UpdateCourseDB())
-	server.App.Get("/course/2/:id", server.UpdateCourse())
-	server.App.Get("/course/d/:id", server.DeleteCourseDB())
-
-	server.App.Get("/review/:id", server.Review)
-	server.App.Get("/review/:id/c", server.CreateReview)
-	server.App.Post("/review/:id/c", server.InsertReview)
-	server.App.Get("/review/:lectid/:uid/u", server.UpdateReview)
-	server.App.Post("/review/:lectid/:uid/u", server.UpdateReviewDB)
-	server.App.Get("/review/:lectid/:uid/d", server.DeleteReviewDB)
+	review := server.App.Group("/review")
+	review.Get("/review/:id", server.Review)
+	review.Get("/review/:id/c", server.CreateReview)
+	review.Post("/review/:id/c", server.InsertReview)
+	review.Get("/review/:lectid/:uid/u", server.UpdateReview)
+	review.Post("/review/:lectid/:uid/u", server.UpdateReviewDB)
+	review.Get("/review/:lectid/:uid/d", server.DeleteReviewDB)
 
 	return &server
 }
