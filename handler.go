@@ -28,16 +28,16 @@ func NewServer(courses *domain.CourseList) *Server {
 	}
 
 	server.App.Get("/", server.ViewCourses())
-	server.App.Get("/login", server.LoginPage())
+	server.App.Get("/login", server.LoginPage)
 
-	server.App.Post("/login", server.Login())
+	server.App.Post("/login", server.Login)
 
 	server.App.Get("/mail-cert", server.MailCertPage)
 	server.App.Post("/mail-cert", server.MailSend)
 	server.App.Post("/key-cert", server.KeyCert)
 
-	server.App.Get("/registration", server.RegistrationPage())
-	server.App.Post("/registration", server.Registration())
+	server.App.Get("/registration", server.RegistrationPage)
+	server.App.Post("/registration", server.Registration)
 
 	server.App.Get("/course", server.Course())
 	server.App.Get("/course/1", server.CreateCourse())
