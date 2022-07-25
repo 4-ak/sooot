@@ -38,7 +38,7 @@ func NewServer(courses *domain.CourseList) *Server {
 	auth.Get("/registration", server.RegistrationPage)
 	auth.Post("/registration", server.Registration)
 
-	course := server.App.Group("/course")
+	course := server.App.Group("/course", server.AuthUser)
 	course.Get("/", server.Course())
 	course.Get("/1", server.CreateCourse())
 	course.Post("/1", server.InsertCourseDB())
@@ -46,7 +46,7 @@ func NewServer(courses *domain.CourseList) *Server {
 	course.Get("/2/:id", server.UpdateCourse())
 	course.Get("/d/:id", server.DeleteCourseDB())
 
-	review := server.App.Group("/review")
+	review := server.App.Group("/review", server.AuthUser)
 	review.Get("/review/:id", server.Review)
 	review.Get("/review/:id/c", server.CreateReview)
 	review.Post("/review/:id/c", server.InsertReview)

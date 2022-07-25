@@ -8,6 +8,7 @@ import (
 	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 const (
@@ -62,17 +63,20 @@ func (s *Server) Login(c *fiber.Ctx) error {
 		return c.SendStatus(200)
 	}
 
-	//pass vaildation
-	if err := security.ComparePass(user.ID, user.Pass, "123", []byte(hashed)); err != nil {
-		fmt.Println(err)
-		c.Accepts("html")
-		c.Format(loginFailCode)
-		return c.SendStatus(200)
+	claims := jwt.MapClaims{
+		"uid": uid,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// TODO : generate signedString
+	signed, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
 	cookie := fiber.Cookie{
 		Name:  "token",
-		Value: fmt.Sprintf("%v", uid),
+		Value: signed,
 	}
 	c.Cookie(&cookie)
 
@@ -196,4 +200,27 @@ func (s *Server) KeyCert(c *fiber.Ctx) error {
 	} else {
 		return c.SendStatus(404)
 	}
+}
+
+func (s *Server) AuthUser(c *fiber.Ctx) error {
+	cookie := c.Cookies("token", "")
+	if cookie == "" {
+		return c.Redirect("/login", 302)
+	}
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Redirect("/login", 302)
+	}
+
+	uid, ok := token.Claims.(jwt.MapClaims)["uid"].(float64)
+	if !ok {
+		return c.Redirect("/login", 302)
+	}
+
+	c.Locals("uid", uid)
+	return c.Next()
 }
