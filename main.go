@@ -7,6 +7,7 @@ import (
 
 func main() {
 	db.NewDB()
+	defer db.DB.Close()
 
 	server := NewServer(&domain.CourseList{})
 
