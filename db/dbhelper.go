@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -10,11 +11,15 @@ import (
 var DB *sql.DB
 
 func NewDB() {
-	db, err := sql.Open("sqlite3", "db.db")
-	if err != nil {
-		panic(err)
+	db, openErr := sql.Open("sqlite3", "db.db")
+	if openErr != nil {
+		fmt.Print(openErr)
+		panic(openErr)
 	}
 	DB = db
+	if _, err := os.Stat("/path/to/whatever"); err != nil {
+		CreateTable()
+	}
 }
 
 const (
@@ -54,10 +59,17 @@ const (
 	`
 )
 
-func UseQuery() {
-	_, err := DB.Exec(createReviewTable)
-	fmt.Print(err)
-	if err != nil {
-		fmt.Print(err)
+func CreateTable() {
+	_, reviewErr := DB.Exec(createReviewTable)
+	_, lectureErr := DB.Exec(createLectureTable)
+	_, userErr := DB.Exec(createUserTable)
+	if reviewErr != nil {
+		fmt.Print(reviewErr)
+	}
+	if lectureErr != nil {
+		fmt.Print(lectureErr)
+	}
+	if userErr != nil {
+		fmt.Print(userErr)
 	}
 }
