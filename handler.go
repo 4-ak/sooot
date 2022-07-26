@@ -47,12 +47,12 @@ func NewServer(courses *domain.CourseList) *Server {
 	course.Get("/d/:id", server.DeleteCourseDB())
 
 	review := server.App.Group("/review", server.AuthUser)
-	review.Get("/review/:id", server.Review)
-	review.Get("/review/:id/c", server.CreateReview)
-	review.Post("/review/:id/c", server.InsertReview)
-	review.Get("/review/:lectid/:uid/u", server.UpdateReview)
-	review.Post("/review/:lectid/:uid/u", server.UpdateReviewDB)
-	review.Get("/review/:lectid/:uid/d", server.DeleteReviewDB)
+	review.Get("/:id", server.Review)
+	review.Get("/:id/c", server.CreateReview)
+	review.Post("/:id/c", server.InsertReview)
+	review.Get("/:lectid/:uid/u", server.UpdateReview)
+	review.Post("/:lectid/:uid/u", server.UpdateReviewDB)
+	review.Get("/:lectid/:uid/d", server.DeleteReviewDB)
 
 	return &server
 }
@@ -179,14 +179,18 @@ type review struct {
 	Professor_point  int  //1~5
 	Is_team          bool //0, 1
 	Is_presentation  bool //0, 1
+	User_id          int
+	Check_id         bool
 }
 
 func (s *Server) Review(c *fiber.Ctx) error {
 	lectid := (c.Params("id"))
-	result := s.SelectReviewDB(lectid)
+	userid := c.Locals("uid").(float64)
+	result := s.SelectReviewDB(lectid, userid)
 	return c.Render("review", fiber.Map{
 		"ReviewData": result,
 		"Lectid":     lectid,
+		"Userid":     userid,
 	})
 }
 
@@ -217,21 +221,22 @@ func (s *Server) InsertReview(c *fiber.Ctx) error {
 	lect_id := (c.Params("id"))
 	c.BodyParser(&rev)
 	_, err := db.DB.Exec(`
-	INSERT INTO review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation) 
-		VALUES(?, ?, ?, ?, ?, ?)`,
-		lect_id, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation)
+	INSERT INTO review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation, user_id) 
+		VALUES(?, ?, ?, ?, ?, ?, ?)`,
+		lect_id, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation, c.Locals("uid"))
 	if err != nil {
 		return c.SendString(err.Error())
 	}
 	return c.Redirect("/review/" + lect_id)
 }
 
-func (s *Server) SelectReviewDB(lectid string) []review {
+func (s *Server) SelectReviewDB(lectid string, userid float64) []review {
 	row, err := db.DB.Query("SELECT * from review WHERE lecture_id = ?", lectid)
 	arr := make([]review, 0)
 	for row.Next() {
 		var rev review
-		row.Scan(&rev.Uid, &rev.Lecture_id, &rev.Beneficial_point, &rev.Honey_point, &rev.Professor_point, &rev.Is_team, &rev.Is_presentation)
+		row.Scan(&rev.Uid, &rev.Lecture_id, &rev.Beneficial_point, &rev.Honey_point, &rev.Professor_point, &rev.Is_team, &rev.Is_presentation, &rev.User_id)
+		rev.Check_id = int(userid) == rev.User_id
 		arr = append(arr, rev)
 	}
 	if err != nil || len(arr) == 0 {
