@@ -64,7 +64,8 @@ func (s *Server) Login(c *fiber.Ctx) error {
 	}
 
 	claims := jwt.MapClaims{
-		"uid": uid,
+		"uid":  fmt.Sprintf("%v", uid),
+		"mail": user.ID,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -216,11 +217,26 @@ func (s *Server) AuthUser(c *fiber.Ctx) error {
 		return c.Redirect("/login", 302)
 	}
 
-	uid, ok := token.Claims.(jwt.MapClaims)["uid"].(float64)
+	uid, ok := token.Claims.(jwt.MapClaims)["uid"].(string)
 	if !ok {
+		c.ClearCookie("token")
 		return c.Redirect("/login", 302)
 	}
 
+	mail, ok := token.Claims.(jwt.MapClaims)["mail"].(string)
+	if !ok {
+		c.ClearCookie("token")
+		return c.Redirect("/login", 302)
+	}
+
+	err = db.DB.QueryRow(
+		`SELECT uid, id FROM user WHERE uid=? AND id=?`,
+		uid, mail).Scan(&uid, &mail)
+	if err != nil {
+		fmt.Println(err)
+		c.ClearCookie("token")
+		return c.Redirect("/login", 302)
+	}
 	c.Locals("uid", uid)
 	return c.Next()
 }
