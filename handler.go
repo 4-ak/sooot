@@ -180,17 +180,20 @@ type review struct {
 	Is_team          bool //0, 1
 	Is_presentation  bool //0, 1
 	User_id          int
-	Check_id         bool
 }
 
 func (s *Server) Review(c *fiber.Ctx) error {
 	lectid := (c.Params("id"))
-	userid := c.Locals("uid").(float64)
-	result := s.SelectReviewDB(lectid, userid)
+	userid, ok := c.Locals("uid").(float64)
+	if !ok {
+		userid = -1
+		fmt.Print("userid error")
+	}
+	result := s.SelectReviewDB(lectid)
 	return c.Render("review", fiber.Map{
 		"ReviewData": result,
 		"Lectid":     lectid,
-		"Userid":     userid,
+		"Userid":     int(userid),
 	})
 }
 
@@ -230,13 +233,12 @@ func (s *Server) InsertReview(c *fiber.Ctx) error {
 	return c.Redirect("/review/" + lect_id)
 }
 
-func (s *Server) SelectReviewDB(lectid string, userid float64) []review {
+func (s *Server) SelectReviewDB(lectid string) []review {
 	row, err := db.DB.Query("SELECT * from review WHERE lecture_id = ?", lectid)
 	arr := make([]review, 0)
 	for row.Next() {
 		var rev review
 		row.Scan(&rev.Uid, &rev.Lecture_id, &rev.Beneficial_point, &rev.Honey_point, &rev.Professor_point, &rev.Is_team, &rev.Is_presentation, &rev.User_id)
-		rev.Check_id = int(userid) == rev.User_id
 		arr = append(arr, rev)
 	}
 	if err != nil || len(arr) == 0 {

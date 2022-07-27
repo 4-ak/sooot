@@ -23,8 +23,13 @@
         </tr>
         {{range .ReviewData }}
         <tr>
-            <td>{{if .Check_id}}<a href="/review/{{.Lecture_id}}/{{.Uid}}/u">UPDATE</a>{{else}}{{end}}</td>
-            <td>{{if .Check_id}}<a href="/review/{{.Lecture_id}}/{{.Uid}}/d">DELETE</a>{{else}}{{end}}</td>
+            {{if eq $.Userid .User_id}}
+            <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/u">UPDATE</a></td>
+            <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/d">DELETE</a></td>
+            {{else}}
+            <td></td>
+            <td></td>
+            {{end}}
             <td>{{.Uid}}</td>
             <td>{{.Lecture_id }}</a></td>
             <td>{{.Beneficial_point}}</td>
