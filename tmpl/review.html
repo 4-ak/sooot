@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1><a href="/review/{{.Lectid}}/c">Create Data</a></h1>
+    <h2>현재 접속자 : {{ .Userid}}</h2>
     <table border="1">
         <tr>
             <th>Update</th>
@@ -18,11 +19,17 @@
             <th>교수님 인싸력 점수</th>
             <th>팀플 여부</th>
             <th>발표 여부</th>
+            <th>작성자</th>
         </tr>
         {{range .ReviewData }}
         <tr>
+            {{if eq $.Userid .User_id}}
             <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/u">UPDATE</a></td>
             <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/d">DELETE</a></td>
+            {{else}}
+            <td></td>
+            <td></td>
+            {{end}}
             <td>{{.Uid}}</td>
             <td>{{.Lecture_id }}</a></td>
             <td>{{.Beneficial_point}}</td>
@@ -30,7 +37,7 @@
             <td>{{.Professor_point}}</td>
             <td>{{.Is_team }}</td>
             <td>{{.Is_presentation}}</td>
-            
+            <td>{{.User_id}}</td>
         </tr>
         {{end}}
     </table>
