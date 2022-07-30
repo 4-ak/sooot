@@ -5,40 +5,44 @@ import (
 	"strconv"
 
 	"github.com/4-ak/sooot/db"
-	"github.com/4-ak/sooot/domain"
+	authtoken "github.com/4-ak/sooot/handler/auth"
+	"github.com/4-ak/sooot/handler/auth/login"
+	"github.com/4-ak/sooot/handler/auth/mailcert"
+	"github.com/4-ak/sooot/handler/auth/register"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 )
 
 type Server struct {
-	*domain.CourseList
 	App *fiber.App
 }
 
-func NewServer(courses *domain.CourseList) *Server {
+func NewServer() *Server {
 	security.KeyGen()
 
 	engine := html.New("./tmpl", ".html")
 	server := Server{
-		CourseList: courses,
 		App: fiber.New(fiber.Config{
 			Views: engine,
 		}),
 	}
 
-	server.App.Get("/", server.ViewCourses())
+	server.App.Get("/", server.IndexPage)
 
+	loginHandler := login.Handler{}
+	registerHandler := register.Handler{}
+	mailCertHandler := mailcert.Handler{}
 	auth := server.App.Group("/")
-	auth.Get("/login", server.LoginPage)
-	auth.Post("/login", server.Login)
-	auth.Get("/mail-cert", server.MailCertPage)
-	auth.Post("/mail-cert", server.MailSend)
-	auth.Post("/key-cert", server.KeyCert)
-	auth.Get("/registration", server.RegistrationPage)
-	auth.Post("/registration", server.Registration)
+	auth.Get("/login", loginHandler.Page)
+	auth.Post("/login", loginHandler.Login)
+	auth.Get("/mail-cert", mailCertHandler.Page)
+	auth.Post("/mail-cert", mailCertHandler.SendMail)
+	auth.Post("/key-cert", mailCertHandler.KeyCert)
+	auth.Get("/registration", registerHandler.RegistrationPage)
+	auth.Post("/registration", registerHandler.Register)
 
-	course := server.App.Group("/course", server.AuthUser)
+	course := server.App.Group("/course", authtoken.AuthUser)
 	course.Get("/", server.Course())
 	course.Get("/1", server.CreateCourse())
 	course.Post("/1", server.InsertCourseDB())
@@ -46,7 +50,7 @@ func NewServer(courses *domain.CourseList) *Server {
 	course.Get("/2/:id", server.UpdateCourse())
 	course.Get("/d/:id", server.DeleteCourseDB())
 
-	review := server.App.Group("/review", server.AuthUser)
+	review := server.App.Group("/review", authtoken.AuthUser)
 	review.Get("/:id", server.Review)
 	review.Get("/:id/c", server.CreateReview)
 	review.Post("/:id/c", server.InsertReview)
@@ -57,13 +61,8 @@ func NewServer(courses *domain.CourseList) *Server {
 	return &server
 }
 
-func (s *Server) ViewCourses() fiber.Handler {
-
-	return func(c *fiber.Ctx) error {
-		return c.Render("main", fiber.Map{
-			"Courses": s.List,
-		})
-	}
+func (s *Server) IndexPage(c *fiber.Ctx) error {
+	return c.Render("main", nil)
 }
 
 type lecture struct {
