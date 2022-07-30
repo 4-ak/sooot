@@ -9,6 +9,7 @@ import (
 	"github.com/4-ak/sooot/handler/auth/login"
 	"github.com/4-ak/sooot/handler/auth/mailcert"
 	"github.com/4-ak/sooot/handler/auth/register"
+	"github.com/4-ak/sooot/handler/lecture"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
@@ -42,13 +43,15 @@ func NewServer() *Server {
 	auth.Get("/registration", registerHandler.RegistrationPage)
 	auth.Post("/registration", registerHandler.Register)
 
+	lectureHandler := lecture.Handler{}
+
 	course := server.App.Group("/course", authtoken.AuthUser)
-	course.Get("/", server.Course())
-	course.Get("/1", server.CreateCourse())
-	course.Post("/1", server.InsertCourseDB())
-	course.Post("/2/:id", server.UpdateCourseDB())
-	course.Get("/2/:id", server.UpdateCourse())
-	course.Get("/d/:id", server.DeleteCourseDB())
+	course.Get("/", lectureHandler.Course())
+	course.Get("/1", lectureHandler.CreateCourse())
+	course.Post("/1", lectureHandler.InsertCourseDB())
+	course.Post("/2/:id", lectureHandler.UpdateCourseDB())
+	course.Get("/2/:id", lectureHandler.UpdateCourse())
+	course.Get("/d/:id", lectureHandler.DeleteCourseDB())
 
 	review := server.App.Group("/review", authtoken.AuthUser)
 	review.Get("/:id", server.Review)
@@ -63,111 +66,6 @@ func NewServer() *Server {
 
 func (s *Server) IndexPage(c *fiber.Ctx) error {
 	return c.Render("main", nil)
-}
-
-type lecture struct {
-	Uid            int
-	Name           string
-	Professor_name string
-	Season         string
-	Grade          string
-	Credit         string
-	Category       string
-}
-
-func (s *Server) CreateCourse() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		return c.Render("editcourse", fiber.Map{
-			"CourseData": db.DB,
-			"isUpdate":   false,
-		})
-	}
-}
-
-func (s *Server) Course() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		return c.Render("course", fiber.Map{
-			"CourseData": s.SelectCourseDB(),
-		})
-	}
-}
-
-func (s *Server) UpdateCourse() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		uid, _ := strconv.Atoi(c.Params("id"))
-		return c.Render("editcourse", fiber.Map{
-			"CourseData": s.SendCourseDB(uid),
-			"isUpdate":   true,
-		})
-	}
-}
-
-func (s *Server) SelectCourseDB() []lecture {
-
-	row, err := db.DB.Query("SELECT * from lecture")
-	arr := make([]lecture, 0)
-	for row.Next() {
-		var lect lecture
-		row.Scan(&lect.Uid, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
-		arr = append(arr, lect)
-	}
-	if err != nil {
-		fmt.Println(err)
-	}
-	return arr
-}
-
-func (s *Server) InsertCourseDB() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		var lect lecture
-		c.BodyParser(&lect)
-		_, err := db.DB.Exec(`
-		INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
-		VALUES(?, ?, ?, ?, ?, ?)`,
-			lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
-		if err != nil {
-			return c.SendString("INSERT ERROR")
-		}
-		return c.Redirect("/course")
-	}
-}
-
-func (s *Server) UpdateCourseDB() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		uid, _ := strconv.Atoi(c.Params("id"))
-		var lect lecture
-		c.BodyParser(&lect)
-		_, err := db.DB.Exec(`
-		UPDATE lecture 
-		SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  
-		WHERE uid = ?`,
-			lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category,
-			uid)
-		if err != nil {
-			fmt.Print(err)
-			return c.SendString("UPDATE ERROR")
-		}
-		return c.Redirect("/course")
-	}
-}
-
-func (s *Server) SendCourseDB(uid int) lecture {
-	rows := db.DB.QueryRow("SELECT * FROM lecture WHERE uid = ?", uid)
-	var lect lecture
-	rows.Scan(&lect.Uid, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
-	return lect
-}
-
-func (s *Server) DeleteCourseDB() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		uid, _ := strconv.Atoi(c.Params("id"))
-		_, err := db.DB.Exec("DELETE FROM lecture WHERE uid = ?", uid)
-		if err != nil {
-			fmt.Print(err)
-			return c.SendString("DELETE ERROR")
-		}
-		return c.Redirect("/course")
-	}
 }
 
 type review struct {
