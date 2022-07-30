@@ -178,21 +178,21 @@ type review struct {
 	Professor_point  int  //1~5
 	Is_team          bool //0, 1
 	Is_presentation  bool //0, 1
-	User_id          int
+	User_id          string
 }
 
 func (s *Server) Review(c *fiber.Ctx) error {
 	lectid := (c.Params("id"))
-	userid, ok := c.Locals("uid").(float64)
+	userid, ok := c.Locals("uid").(string)
 	if !ok {
-		userid = -1
+		userid = "-1"
 		fmt.Print("userid error")
 	}
 	result := s.SelectReviewDB(lectid)
 	return c.Render("review", fiber.Map{
 		"ReviewData": result,
 		"Lectid":     lectid,
-		"Userid":     int(userid),
+		"Userid":     userid,
 	})
 }
 
@@ -225,7 +225,7 @@ func (s *Server) InsertReview(c *fiber.Ctx) error {
 	_, err := db.DB.Exec(`
 	INSERT INTO review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation, user_id) 
 		VALUES(?, ?, ?, ?, ?, ?, ?)`,
-		lect_id, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation, c.Locals("uid"))
+		lect_id, rev.Beneficial_point, rev.Honey_point, rev.Professor_point, rev.Is_team, rev.Is_presentation, c.Locals("uid").(string))
 	if err != nil {
 		return c.SendString(err.Error())
 	}
