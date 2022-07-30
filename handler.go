@@ -45,13 +45,13 @@ func NewServer() *Server {
 
 	lectureHandler := lecture.Handler{}
 
-	course := server.App.Group("/lecture", authtoken.AuthUser)
-	course.Get("/", lectureHandler.Lecture)
-	course.Get("/c", lectureHandler.CreateLecture)
-	course.Post("/c", lectureHandler.InsertLectureDB)
-	course.Post("/u/:id", lectureHandler.UpdateLectureDB)
-	course.Get("/u/:id", lectureHandler.UpdateLecture)
-	course.Get("/d/:id", lectureHandler.DeleteLectureDB)
+	lecture := server.App.Group("/lecture", authtoken.AuthUser)
+	lecture.Get("/", lectureHandler.Lecture)
+	lecture.Get("/c", lectureHandler.Create)
+	lecture.Post("/c", lectureHandler.InsertData)
+	lecture.Post("/u/:id", lectureHandler.UpdateData)
+	lecture.Get("/u/:id", lectureHandler.Update)
+	lecture.Get("/d/:id", lectureHandler.DeleteData)
 
 	review := server.App.Group("/review", authtoken.AuthUser)
 	review.Get("/:id", server.Review)

@@ -20,33 +20,40 @@ type lecture struct {
 	Category       string
 }
 
-func (h *Handler) CreateLecture(c *fiber.Ctx) error {
-	return c.Render("editLecture", fiber.Map{
+func (h *Handler) Create(c *fiber.Ctx) error {
+	return c.Render("editlecture", fiber.Map{
 		"LectureData": db.DB,
 		"isUpdate":    false,
 	})
 }
 
 func (h *Handler) Lecture(c *fiber.Ctx) error {
-	return c.Render("Lecture", fiber.Map{
-		"LectureData": h.SelectLectureDB(),
+	return c.Render("lecture", fiber.Map{
+		"LectureData": h.SelectData(),
 	})
 }
 
-func (h *Handler) UpdateLecture(c *fiber.Ctx) error {
+func (h *Handler) Update(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
-	return c.Render("editLecture", fiber.Map{
-		"LectureData": h.SendLectureDB(uid),
+	return c.Render("editlecture", fiber.Map{
+		"LectureData": h.RowsData(uid),
 		"isUpdate":    true,
 	})
 }
 
-func (h *Handler) SelectLectureDB() []lecture {
+func (h *Handler) SelectData() []lecture {
 	row, err := db.DB.Query("SELECT * from lecture")
 	arr := make([]lecture, 0)
 	for row.Next() {
 		var lect lecture
-		row.Scan(&lect.Uid, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
+		row.Scan(
+			&lect.Uid,
+			&lect.Name,
+			&lect.Professor_name,
+			&lect.Season,
+			&lect.Grade,
+			&lect.Credit,
+			&lect.Category)
 		arr = append(arr, lect)
 	}
 	if err != nil {
@@ -55,20 +62,25 @@ func (h *Handler) SelectLectureDB() []lecture {
 	return arr
 }
 
-func (h *Handler) InsertLectureDB(c *fiber.Ctx) error {
+func (h *Handler) InsertData(c *fiber.Ctx) error {
 	var lect lecture
 	c.BodyParser(&lect)
 	_, err := db.DB.Exec(`
 	INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
 	VALUES(?, ?, ?, ?, ?, ?)`,
-		lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
+		lect.Name,
+		lect.Professor_name,
+		lect.Season,
+		lect.Grade,
+		lect.Credit,
+		lect.Category)
 	if err != nil {
 		return c.SendString("INSERT ERROR")
 	}
-	return c.Redirect("/Lecture")
+	return c.Redirect("/lecture")
 }
 
-func (h *Handler) UpdateLectureDB(c *fiber.Ctx) error {
+func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
 	var lect lecture
 	c.BodyParser(&lect)
@@ -76,28 +88,40 @@ func (h *Handler) UpdateLectureDB(c *fiber.Ctx) error {
 	UPDATE lecture 
 	SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  
 	WHERE uid = ?`,
-		lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category,
+		lect.Name,
+		lect.Professor_name,
+		lect.Season,
+		lect.Grade,
+		lect.Credit,
+		lect.Category,
 		uid)
 	if err != nil {
 		fmt.Print(err)
 		return c.SendString("UPDATE ERROR")
 	}
-	return c.Redirect("/Lecture")
+	return c.Redirect("/lecture")
 }
 
-func (h *Handler) SendLectureDB(uid int) lecture {
+func (h *Handler) RowsData(uid int) lecture {
 	rows := db.DB.QueryRow("SELECT * FROM lecture WHERE uid = ?", uid)
 	var lect lecture
-	rows.Scan(&lect.Uid, &lect.Name, &lect.Professor_name, &lect.Season, &lect.Grade, &lect.Credit, &lect.Category)
+	rows.Scan(
+		&lect.Uid,
+		&lect.Name,
+		&lect.Professor_name,
+		&lect.Season,
+		&lect.Grade,
+		&lect.Credit,
+		&lect.Category)
 	return lect
 }
 
-func (h *Handler) DeleteLectureDB(c *fiber.Ctx) error {
+func (h *Handler) DeleteData(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
 	_, err := db.DB.Exec("DELETE FROM lecture WHERE uid = ?", uid)
 	if err != nil {
 		fmt.Print(err)
 		return c.SendString("DELETE ERROR")
 	}
-	return c.Redirect("/Lecture")
+	return c.Redirect("/lecture")
 }
