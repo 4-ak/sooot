@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course</title>
+    <title>Lecture</title>
 </head>
 <body>
-    <h1><a href="/course/1">Create Data</a></h1>
+    <h1><a href="/lecture/c">Create Data</a></h1>
     <table border="1">
         <tr>
             <th>Update</th>
@@ -23,8 +23,8 @@
         </tr>
         {{range .CourseData }}
         <tr>
-            <td><a href="/course/2/{{.Uid}}">UPDATE</a></td>
-            <td><a href="/course/d/{{.Uid}}">DELETE</a></td>
+            <td><a href="/lecture/u/{{.Uid}}">UPDATE</a></td>
+            <td><a href="/lecture/d/{{.Uid}}">DELETE</a></td>
             <td>{{.Uid}}</td>
             <td><a href="/review/{{.Uid}}">{{.Name}}</a></td>
             <td>{{.Professor_name}}</td>
