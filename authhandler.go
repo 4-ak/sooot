@@ -12,16 +12,6 @@ import (
 )
 
 const (
-	loginFailCode = `
-	<head>
-		<meta charset="UTF-8">
-		<script>
-			if(!alert("존재하지 않는 계정이거나, 비밀번호가 틀렸습니다.")) {
-				window.location = "/login";
-			}
-		</script>
-	</head>
-	`
 	registerFailCode = `
 	<head>
 		<meta charset="UTF-8">
@@ -38,50 +28,6 @@ type Account struct {
 	ID   string `form:"email_id"`
 	Pass string `form:"pass"`
 	Salt string
-}
-
-func (s *Server) LoginPage(c *fiber.Ctx) error {
-	return c.Render("login", nil)
-}
-
-func (s *Server) Login(c *fiber.Ctx) error {
-	var user Account
-
-	if err := c.BodyParser(&user); err != nil {
-		fmt.Println(err)
-		return nil // TODO :500번대 메시지를 전송?
-	}
-
-	var uid int = -1
-	var hashed string
-
-	row := db.DB.QueryRow("SELECT uid, pass FROM user WHERE id=?;", user.ID)
-	if err := row.Scan(&uid, &hashed); err != nil {
-		fmt.Println(err)
-		c.Accepts("html")
-		c.Format(loginFailCode)
-		return c.SendStatus(200)
-	}
-
-	claims := jwt.MapClaims{
-		"uid":  fmt.Sprintf("%v", uid),
-		"mail": user.ID,
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// TODO : generate signedString
-	signed, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
-	}
-
-	cookie := fiber.Cookie{
-		Name:  "token",
-		Value: signed,
-	}
-	c.Cookie(&cookie)
-
-	return c.Redirect("/", fiber.StatusFound)
 }
 
 func (s *Server) RegistrationPage(c *fiber.Ctx) error {

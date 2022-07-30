@@ -6,6 +6,7 @@ import (
 
 	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/domain"
+	"github.com/4-ak/sooot/handler/auth/login"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
@@ -29,9 +30,10 @@ func NewServer(courses *domain.CourseList) *Server {
 
 	server.App.Get("/", server.ViewCourses())
 
+	loginHandler := login.Handler{}
 	auth := server.App.Group("/")
-	auth.Get("/login", server.LoginPage)
-	auth.Post("/login", server.Login)
+	auth.Get("/login", loginHandler.LoginPage)
+	auth.Post("/login", loginHandler.Login)
 	auth.Get("/mail-cert", server.MailCertPage)
 	auth.Post("/mail-cert", server.MailSend)
 	auth.Post("/key-cert", server.KeyCert)
