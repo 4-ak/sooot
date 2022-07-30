@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/4-ak/sooot/db"
-	"github.com/4-ak/sooot/domain"
 	authtoken "github.com/4-ak/sooot/handler/auth"
 	"github.com/4-ak/sooot/handler/auth/login"
 	"github.com/4-ak/sooot/handler/auth/mailcert"
@@ -16,28 +15,26 @@ import (
 )
 
 type Server struct {
-	*domain.CourseList
 	App *fiber.App
 }
 
-func NewServer(courses *domain.CourseList) *Server {
+func NewServer() *Server {
 	security.KeyGen()
 
 	engine := html.New("./tmpl", ".html")
 	server := Server{
-		CourseList: courses,
 		App: fiber.New(fiber.Config{
 			Views: engine,
 		}),
 	}
 
-	server.App.Get("/", server.ViewCourses())
+	server.App.Get("/", server.IndexPage)
 
 	loginHandler := login.Handler{}
 	registerHandler := register.Handler{}
 	mailCertHandler := mailcert.Handler{}
 	auth := server.App.Group("/")
-	auth.Get("/login", loginHandler.LoginPage)
+	auth.Get("/login", loginHandler.Page)
 	auth.Post("/login", loginHandler.Login)
 	auth.Get("/mail-cert", mailCertHandler.Page)
 	auth.Post("/mail-cert", mailCertHandler.SendMail)
@@ -64,13 +61,8 @@ func NewServer(courses *domain.CourseList) *Server {
 	return &server
 }
 
-func (s *Server) ViewCourses() fiber.Handler {
-
-	return func(c *fiber.Ctx) error {
-		return c.Render("main", fiber.Map{
-			"Courses": s.List,
-		})
-	}
+func (s *Server) IndexPage(c *fiber.Ctx) error {
+	return c.Render("main", nil)
 }
 
 type lecture struct {

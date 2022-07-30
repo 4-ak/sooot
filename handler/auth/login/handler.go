@@ -31,7 +31,7 @@ type account struct {
 	Salt string
 }
 
-func (h *Handler) LoginPage(c *fiber.Ctx) error {
+func (h *Handler) Page(c *fiber.Ctx) error {
 	return c.Render("login", nil)
 }
 
