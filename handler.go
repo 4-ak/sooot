@@ -6,7 +6,9 @@ import (
 
 	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/domain"
+	authtoken "github.com/4-ak/sooot/handler/auth"
 	"github.com/4-ak/sooot/handler/auth/login"
+	"github.com/4-ak/sooot/handler/auth/mailcert"
 	"github.com/4-ak/sooot/handler/auth/register"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
@@ -33,16 +35,17 @@ func NewServer(courses *domain.CourseList) *Server {
 
 	loginHandler := login.Handler{}
 	registerHandler := register.Handler{}
+	mailCertHandler := mailcert.Handler{}
 	auth := server.App.Group("/")
 	auth.Get("/login", loginHandler.LoginPage)
 	auth.Post("/login", loginHandler.Login)
-	auth.Get("/mail-cert", server.MailCertPage)
-	auth.Post("/mail-cert", server.MailSend)
-	auth.Post("/key-cert", server.KeyCert)
+	auth.Get("/mail-cert", mailCertHandler.Page)
+	auth.Post("/mail-cert", mailCertHandler.SendMail)
+	auth.Post("/key-cert", mailCertHandler.KeyCert)
 	auth.Get("/registration", registerHandler.RegistrationPage)
 	auth.Post("/registration", registerHandler.Register)
 
-	course := server.App.Group("/course", server.AuthUser)
+	course := server.App.Group("/course", authtoken.AuthUser)
 	course.Get("/", server.Course())
 	course.Get("/1", server.CreateCourse())
 	course.Post("/1", server.InsertCourseDB())
@@ -50,7 +53,7 @@ func NewServer(courses *domain.CourseList) *Server {
 	course.Get("/2/:id", server.UpdateCourse())
 	course.Get("/d/:id", server.DeleteCourseDB())
 
-	review := server.App.Group("/review", server.AuthUser)
+	review := server.App.Group("/review", authtoken.AuthUser)
 	review.Get("/:id", server.Review)
 	review.Get("/:id/c", server.CreateReview)
 	review.Post("/:id/c", server.InsertReview)
