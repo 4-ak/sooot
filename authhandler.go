@@ -30,55 +30,6 @@ type Account struct {
 	Salt string
 }
 
-func (s *Server) RegistrationPage(c *fiber.Ctx) error {
-	return c.Render("registration", nil)
-}
-
-func (s *Server) Registration(c *fiber.Ctx) error {
-	var user Account
-
-	mail, err := security.DecrptionWithBase64(c.Cookies("mail", ""))
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	if err := c.BodyParser(&user); err != nil {
-		fmt.Println(err)
-		return nil // TODO :500번대 메시지를 전송?
-	}
-
-	user.ID = string(mail)
-	c.Accepts("html")
-
-	hashed, err := security.CreatePass(user.ID, user.Pass, "123")
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-	if _, err := db.DB.Exec(`INSERT INTO user(id, pass, is_cert) VALUES(?,?,1)`, user.ID, hashed); err != nil {
-		fmt.Printf("[정보] 계정 생성 실패 : %v\n", err.Error())
-		fmt.Println(err)
-
-		c.Format(registerFailCode)
-		return c.SendStatus(200)
-	}
-
-	fmt.Printf("[정보] 계정 생성 성공 : %v\n", user.ID)
-
-	c.Format(`
-		<head>
-			<meta charset="UTF-8">
-			<script>
-				if(!alert("가입이 완료되었습니다!")) {
-					window.location="/login";
-				}
-			</script>
-		</head>
-		`)
-	return c.SendStatus(201)
-}
-
 func (s *Server) MailCertPage(c *fiber.Ctx) error {
 	return c.Render("mail_cert", nil)
 }
