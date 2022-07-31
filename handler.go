@@ -54,11 +54,11 @@ func NewServer() *Server {
 
 	review := server.App.Group("/review", authtoken.AuthUser)
 	review.Get("/:id", reviewHandler.Review)
-	review.Get("/:id/c", reviewHandler.CreateReview)
-	review.Post("/:id/c", reviewHandler.InsertReview)
-	review.Get("/:lectid/:uid/u", reviewHandler.UpdateReview)
-	review.Post("/:lectid/:uid/u", reviewHandler.UpdateReviewDB)
-	review.Get("/:lectid/:uid/d", reviewHandler.DeleteReviewDB)
+	review.Get("/:id/c", reviewHandler.Create)
+	review.Post("/:id/c", reviewHandler.InsertData)
+	review.Get("/:lectid/:uid/u", reviewHandler.Update)
+	review.Post("/:lectid/:uid/u", reviewHandler.UpdateData)
+	review.Get("/:lectid/:uid/d", reviewHandler.DeleteData)
 
 	return &server
 }
