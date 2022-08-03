@@ -3,13 +3,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+     integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
+     
+    <style>
+        html, body { height: 100%; }
+        body {
+            display: flex;
+            align-items: center;
+            background-color: #f4f4f0;
+        }
+        #form-register {
+            width:100%;
+            max-width: 330px;
+            padding:10px;
+            margin:auto;
+        }
+
+        #form-register .form-floating label {
+            font-size: 0.85em;
+        }
+        section.form-register { display: none; }
+
+        .form-control:focus { box-shadow: none; }
+
+        #keyarea {
+            visibility: hidden;
+        }
+
+        #form-register label {
+            text-align: left;
+        }
+        .mail-guidance {
+            font-size: 0.9em;
+        }
+
+        input[type="password"]#passbox {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        input[type="password"]#repassbox {
+            margin-bottom: 10px;
+            border-top-right-radius: 0;
+            border-top-left-radius: 0;
+        }
+    </style>
+    <script defer>
+        function matchPass() {
+            const passbox = document.getElementById("passbox");
+            const repassbox = document.getElementById("repassbox");
+            const textView = document.getElementById("state");
+            if(passbox.value == repassbox.value) {
+                return true;
+            }
+            textView.innerText = "비밀번호가 일치하지 않습니다.";
+            return false;
+        }
+    </script>
 </head>
-<body>
-    <h1>회원가입</h1>
-    <form action="/registration" method="post">
-        비밀번호: <input type="password" name="pass" id="passbox"><br>
-        비밀번호 확인: <input type="password" id="repassbox">
-        <button>회원가입</button>
-    </form>
+
+<body class="text-center">
+    <main id="form-register">
+        <h1>회원가입</h1>
+        <span id="state"></span>
+        <form action="/registration" method="post" onsubmit="return matchPass()">
+            <div class="form-floating">
+                <input type="password" class="form-control" name="pass" id="passbox">
+                <label for="passbox">비밀번호</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" name="pass" id="repassbox">
+                <label for="repassbox">비밀번호 확인</label>
+            </div>
+            <button class="btn btn-primary">회원가입</button>
+        </form>
+    </main>
 </body>
 </html>
