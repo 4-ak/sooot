@@ -14,10 +14,10 @@ type lecture struct {
 	Uid            int
 	Name           string
 	Professor_name string
-	Season         string
-	Grade          string
-	Credit         string
-	Category       string
+	Season         int
+	Grade          int
+	Credit         int
+	Category       int
 }
 
 func (h *Handler) Create(c *fiber.Ctx) error {
