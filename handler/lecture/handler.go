@@ -67,7 +67,7 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 	c.BodyParser(&lect)
 	_, err := db.DB.Exec(`
 	INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
-	VALUES(?, ?, ?, ?, ?, ?)`,
+	VALUES($1, $2, $3, $4, $5, $6)`,
 		lect.Name,
 		lect.Professor_name,
 		lect.Season,
@@ -86,8 +86,8 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	c.BodyParser(&lect)
 	_, err := db.DB.Exec(`
 	UPDATE lecture 
-	SET name = ?, professor_name = ?, season = ?, grade = ?, credit = ?, category = ?  
-	WHERE uid = ?`,
+	SET name = $1, professor_name = $2, season = $3, grade = $4, credit = $5, category = $6  
+	WHERE uid = $7`,
 		lect.Name,
 		lect.Professor_name,
 		lect.Season,
@@ -103,7 +103,7 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 }
 
 func (h *Handler) RowsData(uid int) lecture {
-	rows := db.DB.QueryRow("SELECT * FROM lecture WHERE uid = ?", uid)
+	rows := db.DB.QueryRow("SELECT * FROM lecture WHERE uid = $1", uid)
 	var lect lecture
 	rows.Scan(
 		&lect.Uid,
@@ -118,7 +118,7 @@ func (h *Handler) RowsData(uid int) lecture {
 
 func (h *Handler) DeleteData(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
-	_, err := db.DB.Exec("DELETE FROM lecture WHERE uid = ?", uid)
+	_, err := db.DB.Exec("DELETE FROM lecture WHERE uid = $1", uid)
 	if err != nil {
 		fmt.Print(err)
 		return c.SendString("DELETE ERROR")

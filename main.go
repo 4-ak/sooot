@@ -6,10 +6,6 @@ import (
 
 func main() {
 	db.NewDB()
-
-	db.NewPG()
-	db.InsertData()
-	db.SelectData()
 	defer db.DB.Close()
 
 	server := NewServer()

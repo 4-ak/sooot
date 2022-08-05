@@ -35,7 +35,7 @@ func AuthUser(c *fiber.Ctx) error {
 	}
 
 	err = db.DB.QueryRow(
-		`SELECT uid, id FROM user WHERE uid=? AND id=?`,
+		`SELECT uid, id FROM account WHERE uid=$1 AND id=$2`,
 		uid, mail).Scan(&uid, &mail)
 	if err != nil {
 		fmt.Println(err)

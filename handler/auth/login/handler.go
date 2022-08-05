@@ -44,10 +44,12 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 
 	row := db.DB.QueryRow(`
 	SELECT uid, pass
-	FROM user
-	WHERE id=?`, c.FormValue("email_id", ""))
+	FROM account
+	WHERE id=$1;`, c.FormValue("email_id", ""))
 
 	if err := row.Scan(&stored.UID, &stored.Pass); err != nil {
+		fmt.Println(stored.UID)
+		fmt.Println(stored.Pass)
 		return h.LoginFailed(c, err, 2)
 	}
 	if err := security.ComparePass(
