@@ -34,9 +34,7 @@ func AuthUser(c *fiber.Ctx) error {
 		return c.Redirect("/login", 302)
 	}
 
-	err = db.DB.QueryRow(
-		`SELECT uid, id FROM account WHERE uid=$1 AND id=$2`,
-		uid, mail).Scan(&uid, &mail)
+	err = db.CheckAuth(uid, mail).Scan(&uid, &mail)
 	if err != nil {
 		fmt.Println(err)
 		c.ClearCookie("token")

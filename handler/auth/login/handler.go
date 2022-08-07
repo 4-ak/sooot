@@ -42,10 +42,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return h.LoginFailed(c, err, 1)
 	}
 
-	row := db.DB.QueryRow(`
-	SELECT uid, pass
-	FROM account
-	WHERE id=$1;`, c.FormValue("email_id", ""))
+	row := db.MatchAccount(c.FormValue("email_id", ""))
 
 	if err := row.Scan(&stored.UID, &stored.Pass); err != nil {
 		fmt.Println(stored.UID)

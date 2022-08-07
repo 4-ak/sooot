@@ -22,8 +22,7 @@ type lecture struct {
 
 func (h *Handler) Create(c *fiber.Ctx) error {
 	return c.Render("editlecture", fiber.Map{
-		"LectureData": db.DB,
-		"isUpdate":    false,
+		"isUpdate": false,
 	})
 }
 
@@ -36,13 +35,13 @@ func (h *Handler) Lecture(c *fiber.Ctx) error {
 func (h *Handler) Update(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
 	return c.Render("editlecture", fiber.Map{
-		"LectureData": h.RowsData(uid),
+		"LectureData": h.RowData(uid),
 		"isUpdate":    true,
 	})
 }
 
 func (h *Handler) SelectData() []lecture {
-	row, err := db.DB.Query("SELECT * from lecture")
+	row, err := db.TakeAllLecture()
 	arr := make([]lecture, 0)
 	for row.Next() {
 		var lect lecture
@@ -65,9 +64,7 @@ func (h *Handler) SelectData() []lecture {
 func (h *Handler) InsertData(c *fiber.Ctx) error {
 	var lect lecture
 	c.BodyParser(&lect)
-	_, err := db.DB.Exec(`
-	INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
-	VALUES($1, $2, $3, $4, $5, $6)`,
+	err := db.InsertLecture(
 		lect.Name,
 		lect.Professor_name,
 		lect.Season,
@@ -84,10 +81,7 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
 	var lect lecture
 	c.BodyParser(&lect)
-	_, err := db.DB.Exec(`
-	UPDATE lecture 
-	SET name = $1, professor_name = $2, season = $3, grade = $4, credit = $5, category = $6  
-	WHERE uid = $7`,
+	err := db.UpdateLecture(
 		lect.Name,
 		lect.Professor_name,
 		lect.Season,
@@ -102,10 +96,10 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	return c.Redirect("/lecture")
 }
 
-func (h *Handler) RowsData(uid int) lecture {
-	rows := db.DB.QueryRow("SELECT * FROM lecture WHERE uid = $1", uid)
+func (h *Handler) RowData(uid int) lecture {
+	row := db.RowLecture(uid)
 	var lect lecture
-	rows.Scan(
+	row.Scan(
 		&lect.Uid,
 		&lect.Name,
 		&lect.Professor_name,
@@ -118,7 +112,7 @@ func (h *Handler) RowsData(uid int) lecture {
 
 func (h *Handler) DeleteData(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
-	_, err := db.DB.Exec("DELETE FROM lecture WHERE uid = $1", uid)
+	err := db.DeleteLecture(uid)
 	if err != nil {
 		fmt.Print(err)
 		return c.SendString("DELETE ERROR")
