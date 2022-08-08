@@ -1,42 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lecture</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background-color: #f4f4f0;
+        }
+
+        .container-main {
+            margin: auto;
+            padding-top: 10px;
+            max-width: 550px;
+        }
+
+        input[type=text]:focus {
+            box-shadow: none;
+        }
+
+        .list-group-item .item-subtitle {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .list-group-item .item-detail {
+            font-size: 0.75em;
+        }
+
+        .professor {
+            opacity: 0.95;
+        }
+    </style>
 </head>
+
 <body>
-    <h1><a href="/lecture/c">Create Data</a></h1>
-    <table border="1">
-        <tr>
-            <th>Update</th>
-            <th>Delete</th>
-            <th>uid</th>
-            <th>강의 이름</th>
-            <th>교수명</th>
-            <th>리뷰 평점</th>
-            <th>리뷰 개수</th>
-            <th>학기</th>
-            <th>학년</th>
-            <th>학점</th>
-            <th>개설 학과</th>
-        </tr>
-        {{range .LectureData }}
-        <tr>
-            <td><a href="/lecture/u/{{.Uid}}">UPDATE</a></td>
-            <td><a href="/lecture/d/{{.Uid}}">DELETE</a></td>
-            <td>{{.Uid}}</td>
-            <td><a href="/review/{{.Uid}}">{{.Name}}</a></td>
-            <td>{{.Professor_name}}</td>
-            <td>{{.Season}}</td>
-            <td>{{.Grade}}</td>
-            <td>{{.Credit}}</td>
-            <td>{{.Category}}</td>
-            <td></td>
-            <td></td>
-            
-        </tr>
-        {{end}}
-    </table>
+    <div class="container-main">
+        <h1 class="text-center">sOoOt!</h1>
+        <form action="" method="get" class="d-flex form-search mb-4">
+            <input type="text" class="form-control bi bi-search" name="" id="" placeholder="강의명으로 검색하세요">
+            <button class="btn btn-priamry bg-light"><i class="bi bi-search"></i></button>
+        </form>
+        <div class="list-group text-left mb-4">
+            {{ range .LectureData }}
+            <a href="/review/{{ .Uid }}" class="list-group-item list-group-item-action gap-3 py-2">
+                <header class="d-flex gap-1 align-items-end">
+                    <h4 class="item-title mb-auto">{{ .Name }}</h4>
+                    <div class="d-flex">
+                        <span class="item-subtitle">2019년</span>
+                        <div class="item-subtitle">2학기</div>
+                    </div>
+                </header>
+                <article>
+                    <div class="professor">{{ .Professor_name }} 교수님</div>
+                    <div class="d-flex gap-2 item-detail">
+                        <div>&nbsp; {{ .Grade }}학점</div>
+                        <div>{{ .Category }} </div>
+                        <div>*4.5(10개)</div>
+                    </div>
+                </article>
+            </a>
+            {{ end }}
+        </div>
+        <a href="/lecture/c" class="btn btn-primary w-100">+</a>
+    </div>
 </body>
+
 </html>
