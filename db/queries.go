@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-func MatchAccount(id string) *sql.Row {
+func AccountWithPass(id string) *sql.Row {
 	query := `
 	SELECT uid, pass
 	FROM account
@@ -21,7 +21,7 @@ func RegisterAccount(id string, pass []byte) (sql.Result, error) {
 	return DB.Exec(query, id, pass)
 }
 
-func CheckAuth(uid, id string) *sql.Row {
+func AccountExists(uid, id string) *sql.Row {
 	query := `
 	SELECT uid, id 
 	FROM account 
@@ -30,7 +30,7 @@ func CheckAuth(uid, id string) *sql.Row {
 	return DB.QueryRow(query, uid, id)
 }
 
-func TakeAllLecture() (*sql.Rows, error) {
+func LectureAll() (*sql.Rows, error) {
 	query := `
 	SELECT *
 	FROM lecture
@@ -57,7 +57,7 @@ func UpdateLecture(name, professor_name string, season, grade, credit, category,
 	return err
 }
 
-func RowLecture(uid int) *sql.Row {
+func Lecture(uid int) *sql.Row {
 	query := `
 	SELECT * 
 	FROM lecture 
@@ -75,7 +75,7 @@ func DeleteLecture(uid int) error {
 	return err
 }
 
-func TakeAllReview(lecture_id string) (*sql.Rows, error) {
+func ReviewAll(lecture_id string) (*sql.Rows, error) {
 	query := `
 	SELECT * 
 	FROM review 
@@ -104,7 +104,7 @@ func UpdateReview(beneficial_point, honey_point, professor_point int, is_team, i
 	return err
 }
 
-func RowReview(uid int) *sql.Row {
+func Review(uid int) *sql.Row {
 	query := `
 	SELECT beneficial_point, honey_point, professor_point, is_team, is_presentation 
 	FROM review 

@@ -41,7 +41,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 }
 
 func (h *Handler) SelectData() []lecture {
-	row, err := db.TakeAllLecture()
+	row, err := db.LectureAll()
 	arr := make([]lecture, 0)
 	for row.Next() {
 		var lect lecture
@@ -97,7 +97,7 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 }
 
 func (h *Handler) RowData(uid int) lecture {
-	row := db.RowLecture(uid)
+	row := db.Lecture(uid)
 	var lect lecture
 	row.Scan(
 		&lect.Uid,

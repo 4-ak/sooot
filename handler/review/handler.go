@@ -51,7 +51,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 }
 
 func (h *Handler) RowData(uid int) review {
-	row := db.RowReview(uid)
+	row := db.Review(uid)
 	var rev review
 	row.Scan(
 		&rev.Beneficial_point,
@@ -81,7 +81,7 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 }
 
 func (h *Handler) SelectData(lectid string) []review {
-	row, err := db.TakeAllReview(lectid)
+	row, err := db.ReviewAll(lectid)
 	arr := make([]review, 0)
 	for row.Next() {
 		var rev review
