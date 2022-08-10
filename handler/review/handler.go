@@ -132,7 +132,7 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 }
 
 func (h *Handler) DeleteData(c *fiber.Ctx) error {
-	uid := c.Params("uid")
+	uid, _ := strconv.Atoi(c.Params("uid"))
 	lect_id := c.Params("lectid")
 	err := db.DeleteReview(uid)
 	if err != nil {

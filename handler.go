@@ -6,6 +6,7 @@ import (
 	"github.com/4-ak/sooot/handler/auth/mailcert"
 	"github.com/4-ak/sooot/handler/auth/register"
 	"github.com/4-ak/sooot/handler/lecture"
+	"github.com/4-ak/sooot/handler/post"
 	"github.com/4-ak/sooot/handler/review"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
@@ -59,6 +60,16 @@ func NewServer() *Server {
 	review.Get("/:lectid/:uid/u", reviewHandler.Update)
 	review.Post("/:lectid/:uid/u", reviewHandler.UpdateData)
 	review.Get("/:lectid/:uid/d", reviewHandler.DeleteData)
+
+	postHandler := post.Handler{}
+
+	post := server.App.Group("/post", authtoken.AuthUser)
+	post.Get("/", postHandler.Post)
+	post.Get("/c", postHandler.Create)
+	post.Post("/c", postHandler.InsertData)
+	post.Get("/u/:id", postHandler.Update)
+	post.Post("/u/:id", postHandler.UpdateData)
+	post.Get("/d/:id", postHandler.DeleteData)
 
 	return &server
 }

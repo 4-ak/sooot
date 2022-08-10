@@ -113,9 +113,45 @@ func Review(uid int) *sql.Row {
 	return DB.QueryRow(query, uid)
 }
 
-func DeleteReview(uid string) error {
+func DeleteReview(uid int) error {
 	query := `
 	DELETE FROM review WHERE uid = $1
+	`
+	_, err := DB.Exec(query, uid)
+	return err
+}
+
+func PostAll() (*sql.Rows, error) {
+	query := `
+	SELECT *
+	FROM post
+	`
+	return DB.Query(query)
+}
+
+func InsertPost(title, contents, writer string, recommand int) error {
+	query := `
+	INSERT INTO 
+	post(title, contents, recommand, writer)
+	VALUES($1, $2, $3, $4)
+	`
+	_, err := DB.Exec(query, title, contents, recommand, writer)
+	return err
+}
+
+func UpdatePost(title, contents string, uid int) error {
+	query := `
+	UPDATE post
+	SET title = $1, contents = $2
+	WHERE uid = $3
+	`
+	_, err := DB.Exec(query, title, contents, uid)
+	return err
+}
+
+func DeletePost(uid int) error {
+	query := `
+	DELETE FROM post WHERE uid = $1
 	`
 	_, err := DB.Exec(query, uid)
 	return err

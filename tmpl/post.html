@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post</title>
+</head>
+<body>
+    <h1><a href="/post/c">Create Data</a></h1>
+    <table border="1">
+        <tr>
+            <th>Update</th>
+            <th>Delete</th>
+            <th>uid</th>
+            <th>제목</th>
+            <th>내용</th>
+            <th>추천수</th>
+            <th>작성자</th>
+            <th>댓글</th>
+        </tr>
+        {{range .PostData}}
+            <tr>
+                {{if eq $.Userid .Writer}}
+                <td><a href="/post/u/{{.Uid}}">UPDATE</a></td>
+                <td><a href="/post/d/{{.Uid}}">DELETE</a></td>
+                {{else}}
+                <td></td>
+                <td></td>
+                {{end}}
+                <td>{{.Uid}}</td>
+                <td>{{.Title}}</td>
+                <td>{{.Contents}}</td>
+                <td>{{.Recommand}}</td>
+                <td>{{.Writer}}</td>
+                <td><a></a></td>
+            </tr>
+        {{end}}
+    </table>
+</body>
+</html>

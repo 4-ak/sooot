@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{if .isUpdate}}Update Post{{else}}Create Post{{end}}</title>
+</head>
+<body>
+    <h1>{{if .isUpdate}}Update Post{{else}}Create Post{{end}}</h1>
+    <form method="post">
+        <table border="1">
+            <tr>
+                <td>Title</td>
+                <td><input type="text" name="Title"></td>
+            </tr>
+            <tr>
+                <td>Contents</td>
+                <td><input type="text" name="Contents"></td>
+            </tr>
+            <tr>
+                {{if .isUpdate}}
+                {{else}}
+                <td>Recommand</td>
+                <td><input type="text" name="Recommand"></td>
+                {{end}}
+            </tr>
+        </table>
+    <input type="submit">
+    </form>
+</body>
+</html>
