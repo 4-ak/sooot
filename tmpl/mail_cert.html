@@ -20,6 +20,12 @@
 
     <script defer>
         function mailSubmit() {
+            const mailText = document.getElementById("mailbox");
+            const msgbox = document.getElementById("MailMsg");
+            if (mailText.value === "") {
+                alert("이메일을 입력해주세요");
+                return false;
+            }
             fetch('/mail-cert', {
                 method: 'POST',
                 cache: 'no-cache',
@@ -28,19 +34,31 @@
                     'Content-Type': "application/json"
                 },
                 body: JSON.stringify({
-                    mail: document.getElementById("mailbox").value
+                    mail: mailText.value
                 })
             })
                 .then((response) => {
+                    if(!response.ok) {
+                        alert("이미 가입되어거나 잘못된 메시지 입니다.");
+                        return;
+                    }
                     document.getElementById("keyarea").style.visibility = "visible";
                     document.getElementById("cert-sendmail").style.display = "none";
-                    document.getElementById("MailMsg").innerText = "메일 발송에 성공했습니다.";
+                    msgbox.innerText = "메일 발송에 성공했습니다.";
                 })
-                .catch(error => console.log(error));
+                .catch((err) => {
+                    msgbox.innerText ="이미 가입된 계정입니다.";
+                });
             return false;
         }
 
         function keyCert() {
+            const keyText = document.getElementById("certKeybox");
+            if(keyText==="") {
+                alert("인증번호를 입력해주세요");
+                return false;
+            }
+
             fetch('/key-cert', {
                 method: 'POST',
                 cache: 'no-cache',
@@ -50,7 +68,7 @@
                     'Content-Type': "application/json"
                 },
                 body: JSON.stringify({
-                    key: document.getElementById("certKeybox").value
+                    key: keyText.value
                 })
             })
                 .then((response) => {
@@ -78,6 +96,8 @@
             학생 이메일에 대해서 처음들어보셨나요?<br>
             <a href="http://info.wsu.ac.kr">대학정보시스템</a>에서 생성할 수 있습니다.
         </p>
+        <span id="MailMsg">&nbsp;</span>
+
         <form action="/mail-cert" method="post" onsubmit="return mailSubmit()" class="form-floating" id="mailarea">
             <input type="text" class="form-control" name="mailID" id="mailbox">
             <label for="mailbox">아이디(@live.wsu.ac.kr)</label>
@@ -87,7 +107,6 @@
         <form action="/key-cert" method="post" class="form-floating" id="keyarea" onsubmit="return keyCert()">
             <input type="text" class="form-control" name="certKey" id="certKeybox">
             <label for="certKeybox">인증번호</label>
-            <span id="MailMsg">&nbsp;</span>
             <span id="KeyCertMsg"></span><br>
             <button class="btn btn-primary">인증</button>
         </form>
