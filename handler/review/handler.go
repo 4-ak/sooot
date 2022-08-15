@@ -21,6 +21,8 @@ type review struct {
 	User_id          string
 }
 
+var rev review
+
 func (h *Handler) Review(c *fiber.Ctx) error {
 	lectid := (c.Params("id"))
 	userid, ok := c.Locals("uid").(string)
@@ -51,8 +53,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 }
 
 func (h *Handler) RowData(uid int) review {
-	row := db.Review(uid)
-	var rev review
+	row := db.Review().QueryRow(uid)
 	row.Scan(
 		&rev.Beneficial_point,
 		&rev.Honey_point,
@@ -63,10 +64,9 @@ func (h *Handler) RowData(uid int) review {
 }
 
 func (h *Handler) InsertData(c *fiber.Ctx) error {
-	var rev review
 	lect_id := (c.Params("id"))
 	c.BodyParser(&rev)
-	err := db.InsertReview(
+	_, err := db.InsertReview().Exec(
 		rev.Beneficial_point,
 		rev.Honey_point,
 		rev.Professor_point,
@@ -81,7 +81,7 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 }
 
 func (h *Handler) SelectData(lectid string) []review {
-	row, err := db.ReviewAll(lectid)
+	row, err := db.ReviewAll().Query(lectid)
 	arr := make([]review, 0)
 	for row.Next() {
 		var rev review
@@ -106,9 +106,8 @@ func (h *Handler) SelectData(lectid string) []review {
 func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	uid := c.Params("uid")
 	lect_id := c.Params("lectid")
-	var rev review
 	c.BodyParser(&rev)
-	err := db.UpdateReview(
+	_, err := db.UpdateReview().Exec(
 		rev.Beneficial_point,
 		rev.Honey_point,
 		rev.Professor_point,
@@ -134,7 +133,7 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 func (h *Handler) DeleteData(c *fiber.Ctx) error {
 	uid := c.Params("uid")
 	lect_id := c.Params("lectid")
-	err := db.DeleteReview(uid)
+	_, err := db.DeleteReview().Exec(uid)
 	if err != nil {
 		fmt.Print(err)
 		return c.SendString("DELETE ERROR")

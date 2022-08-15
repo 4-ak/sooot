@@ -2,121 +2,168 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 )
 
-func AccountWithPass(id string) *sql.Row {
+func AccountWithPass() *sql.Stmt {
 	query := `
 	SELECT uid, pass
 	FROM account
 	WHERE id=$1
 	`
-	return DB.QueryRow(query, id)
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func RegisterAccount(id string, pass []byte) (sql.Result, error) {
+func RegisterAccount() *sql.Stmt {
 	query := `
 	INSERT INTO account(id, pass, is_cert)
 	VALUES($1,$2,1)
 	`
-	return DB.Exec(query, id, pass)
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func AccountExists(uid, id string) *sql.Row {
+func AccountExists() *sql.Stmt {
 	query := `
 	SELECT uid, id 
 	FROM account 
 	WHERE uid=$1 AND id=$2
 	`
-	return DB.QueryRow(query, uid, id)
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func LectureAll() (*sql.Rows, error) {
+func LectureAll() *sql.Stmt {
 	query := `
 	SELECT *
 	FROM lecture
 	`
-	return DB.Query(query)
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func InsertLecture(name, professor_name string, season, grade, credit, category int) error {
+func InsertLecture() *sql.Stmt {
 	query := `
 	INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
 	VALUES($1, $2, $3, $4, $5, $6)
 	`
-	_, err := DB.Exec(query, name, professor_name, season, grade, credit, category)
-	return err
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func UpdateLecture(name, professor_name string, season, grade, credit, category, uid int) error {
+func UpdateLecture() *sql.Stmt {
 	query := `
 	UPDATE lecture 
 	SET name = $1, professor_name = $2, season = $3, grade = $4, credit = $5, category = $6  
 	WHERE uid = $7
 	`
-	_, err := DB.Exec(query, name, professor_name, season, grade, credit, category, uid)
-	return err
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func Lecture(uid int) *sql.Row {
+func Lecture() *sql.Stmt {
 	query := `
 	SELECT * 
 	FROM lecture 
 	WHERE uid = $1
 	`
-	return DB.QueryRow(query)
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func DeleteLecture(uid int) error {
+func DeleteLecture() *sql.Stmt {
 	query := `
 	DELETE FROM lecture 
 	WHERE uid = $1
 	`
-	_, err := DB.Exec(query, uid)
-	return err
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func ReviewAll(lecture_id string) (*sql.Rows, error) {
+func ReviewAll() *sql.Stmt {
 	query := `
 	SELECT * 
 	FROM review 
 	WHERE lecture_id = $1
 	`
-	return DB.Query(query, lecture_id)
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func InsertReview(beneficial_point, honey_point, professor_point int, is_team, is_presentation bool, lecture_id, uid string) error {
+func InsertReview() *sql.Stmt {
 	query := `
 	INSERT INTO 
 	review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation, user_id) 
 	VALUES($1, $2, $3, $4, $5, $6, $7)
 	`
-	_, err := DB.Exec(query, lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation, uid)
-	return err
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func UpdateReview(beneficial_point, honey_point, professor_point int, is_team, is_presentation bool, uid string) error {
+func UpdateReview() *sql.Stmt {
 	query := `
 	UPDATE review
 	SET beneficial_point = $1, honey_point = $2, professor_point = $3, is_team = $4, is_presentation = $5 
 	WHERE uid = $6
 	`
-	_, err := DB.Exec(query, beneficial_point, honey_point, professor_point, is_team, is_presentation, uid)
-	return err
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func Review(uid int) *sql.Row {
+func Review() *sql.Stmt {
 	query := `
 	SELECT beneficial_point, honey_point, professor_point, is_team, is_presentation 
 	FROM review 
 	WHERE uid = $1
 	`
-	return DB.QueryRow(query, uid)
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }
 
-func DeleteReview(uid string) error {
+func DeleteReview() *sql.Stmt {
 	query := `
 	DELETE FROM review WHERE uid = $1
 	`
-	_, err := DB.Exec(query, uid)
-	return err
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
 }

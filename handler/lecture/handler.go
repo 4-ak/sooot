@@ -20,6 +20,8 @@ type lecture struct {
 	Category       int
 }
 
+var lect lecture
+
 func (h *Handler) Create(c *fiber.Ctx) error {
 	return c.Render("editlecture", fiber.Map{
 		"isUpdate": false,
@@ -41,10 +43,9 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 }
 
 func (h *Handler) SelectData() []lecture {
-	row, err := db.LectureAll()
+	row, err := db.LectureAll().Query()
 	arr := make([]lecture, 0)
 	for row.Next() {
-		var lect lecture
 		row.Scan(
 			&lect.Uid,
 			&lect.Name,
@@ -62,15 +63,8 @@ func (h *Handler) SelectData() []lecture {
 }
 
 func (h *Handler) InsertData(c *fiber.Ctx) error {
-	var lect lecture
 	c.BodyParser(&lect)
-	err := db.InsertLecture(
-		lect.Name,
-		lect.Professor_name,
-		lect.Season,
-		lect.Grade,
-		lect.Credit,
-		lect.Category)
+	_, err := db.InsertLecture().Exec(lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
 	if err != nil {
 		return c.SendString("INSERT ERROR")
 	}
@@ -79,9 +73,8 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 
 func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
-	var lect lecture
 	c.BodyParser(&lect)
-	err := db.UpdateLecture(
+	_, err := db.UpdateLecture().Exec(
 		lect.Name,
 		lect.Professor_name,
 		lect.Season,
@@ -97,8 +90,7 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 }
 
 func (h *Handler) RowData(uid int) lecture {
-	row := db.Lecture(uid)
-	var lect lecture
+	row := db.Lecture().QueryRow(uid)
 	row.Scan(
 		&lect.Uid,
 		&lect.Name,
@@ -112,7 +104,7 @@ func (h *Handler) RowData(uid int) lecture {
 
 func (h *Handler) DeleteData(c *fiber.Ctx) error {
 	uid, _ := strconv.Atoi(c.Params("id"))
-	err := db.DeleteLecture(uid)
+	_, err := db.DeleteLecture().Exec(uid)
 	if err != nil {
 		fmt.Print(err)
 		return c.SendString("DELETE ERROR")

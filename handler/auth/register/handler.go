@@ -54,7 +54,7 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	if _, err := db.RegisterAccount(user.ID, hashed); err != nil {
+	if _, err := db.RegisterAccount().Exec(user.ID, hashed); err != nil {
 		return h.failure(c, err, 3)
 	}
 
