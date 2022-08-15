@@ -1,24 +1,12 @@
 package register
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
-)
-
-const (
-	registerFailCode = `
-	<head>
-		<meta charset="UTF-8">
-		<script>
-		if(!alert("이미 가입되어 있거나 요청이 잘못되었습니다.")) {
-			window.location = "/registration";
-		}
-		</script>
-	</head>
-	`
 )
 
 type Handler struct{}
@@ -37,44 +25,40 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 
 	mail, err := security.DecrptionWithBase64(c.Cookies("mail", ""))
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
+		return h.failure(c, err, 0)
 	}
 
 	if err := c.BodyParser(&user); err != nil {
 		return h.failure(c, err, 2)
 	}
-
 	user.ID = string(mail)
-	c.Accepts("html")
+
+	if user.ID == "" || user.Pass == "" {
+		return h.failure(c, errors.New("empty form"), 2)
+	}
 
 	hashed, err := security.CreatePass(user.ID, user.Pass, "123")
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	if _, err := db.RegisterAccount(user.ID, hashed); err != nil {
 		return h.failure(c, err, 3)
 	}
 
+	if _, err := db.RegisterAccount(user.ID, hashed); err != nil {
+		return h.failure(c, err, 4)
+	}
+
 	fmt.Printf("[정보] 계정 생성 성공 : %v\n", user.ID)
-	c.Format(`
-		<head>
-			<meta charset="UTF-8">
-			<script>
-				if(!alert("가입이 완료되었습니다!")) {
-					window.location="/login";
-				}
-			</script>
-		</head>
-		`)
-	return c.SendStatus(201)
+	c.Status(fiber.StatusCreated)
+	return c.Render("redirect_alert", fiber.Map{
+		"Msg":      "가입이 완료되었습니다.",
+		"Location": "/login",
+	})
 }
 
 func (h *Handler) failure(c *fiber.Ctx, err error, code int) error {
 	fmt.Printf("[error] register(%v):%v", code, err)
-	c.Accepts("html")
-	c.Format(registerFailCode)
-	return c.SendStatus(fiber.StatusUnauthorized)
+	c.Status(fiber.StatusConflict)
+	return c.Render("redirect_alert", fiber.Map{
+		"Msg":      "이미 가입되어 있거나 잘못된 요청입니다.",
+		"Location": "/registration",
+	})
 }

@@ -23,6 +23,12 @@ func (h *Handler) SendMail(c *fiber.Ctx) error {
 		fmt.Println(err)
 		return c.SendStatus(404)
 	}
+	if mail.Mail == "" {
+		fmt.Println("[err] empty form")
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	// TODO : check userID exists
 
 	cypherMail, err := security.EncrpytionWithBase64([]byte(mail.Mail))
 	if err != nil {
