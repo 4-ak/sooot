@@ -12,12 +12,12 @@ type Handler struct{}
 
 type lecture struct {
 	Uid            int
+	Department     int
 	Name           string
 	Professor_name string
-	Season         int
-	Grade          int
+	Semester       int
 	Credit         int
-	Category       int
+	Parent         int
 }
 
 var lect lecture
@@ -50,10 +50,8 @@ func (h *Handler) SelectData() []lecture {
 			&lect.Uid,
 			&lect.Name,
 			&lect.Professor_name,
-			&lect.Season,
-			&lect.Grade,
-			&lect.Credit,
-			&lect.Category)
+			&lect.Semester,
+			&lect.Credit)
 		arr = append(arr, lect)
 	}
 	if err != nil {
@@ -64,7 +62,7 @@ func (h *Handler) SelectData() []lecture {
 
 func (h *Handler) InsertData(c *fiber.Ctx) error {
 	c.BodyParser(&lect)
-	_, err := db.InsertLecture().Exec(lect.Name, lect.Professor_name, lect.Season, lect.Grade, lect.Credit, lect.Category)
+	_, err := db.InsertLecture().Exec(lect.Name, lect.Professor_name, lect.Semester, lect.Credit)
 	if err != nil {
 		return c.SendString("INSERT ERROR")
 	}
@@ -77,10 +75,8 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	_, err := db.UpdateLecture().Exec(
 		lect.Name,
 		lect.Professor_name,
-		lect.Season,
-		lect.Grade,
+		lect.Semester,
 		lect.Credit,
-		lect.Category,
 		uid)
 	if err != nil {
 		fmt.Print(err)
@@ -93,12 +89,12 @@ func (h *Handler) RowData(uid int) lecture {
 	row := db.Lecture().QueryRow(uid)
 	row.Scan(
 		&lect.Uid,
+		&lect.Department,
 		&lect.Name,
 		&lect.Professor_name,
-		&lect.Season,
-		&lect.Grade,
+		&lect.Semester,
 		&lect.Credit,
-		&lect.Category)
+		&lect.Parent)
 	return lect
 }
 

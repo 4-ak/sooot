@@ -57,8 +57,8 @@ func LectureAll() *sql.Stmt {
 
 func InsertLecture() *sql.Stmt {
 	query := `
-	INSERT INTO lecture(name, professor_name, season, grade, credit, category) 
-	VALUES($1, $2, $3, $4, $5, $6)
+	INSERT INTO lecture(department, name, professor_name, semester, credit, parent) 
+	VALUES(0, $1, $2, $3, $4, 0)
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {
@@ -70,8 +70,8 @@ func InsertLecture() *sql.Stmt {
 func UpdateLecture() *sql.Stmt {
 	query := `
 	UPDATE lecture 
-	SET name = $1, professor_name = $2, season = $3, grade = $4, credit = $5, category = $6  
-	WHERE uid = $7
+	SET name = $1, professor_name = $2, semester = $3, credit = $4  
+	WHERE uid = $5
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {
@@ -121,8 +121,16 @@ func ReviewAll() *sql.Stmt {
 func InsertReview() *sql.Stmt {
 	query := `
 	INSERT INTO 
-	review(lecture_id, beneficial_point, honey_point, professor_point, is_team, is_presentation, user_id) 
-	VALUES($1, $2, $3, $4, $5, $6, $7)
+	review(
+		lecture_id, 
+		writer, 
+		beneficial_point, 
+		honey_point, 
+		assignment, 
+		team_project, 
+		presentation, 
+		comment) 
+	VALUES($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {
@@ -134,8 +142,8 @@ func InsertReview() *sql.Stmt {
 func UpdateReview() *sql.Stmt {
 	query := `
 	UPDATE review
-	SET beneficial_point = $1, honey_point = $2, professor_point = $3, is_team = $4, is_presentation = $5 
-	WHERE uid = $6
+	SET beneficial_point = $1, honey_point = $2, assignment = $3, team_project = $4, presentation = $5, comment = $6 
+	WHERE uid = $7
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {
@@ -146,8 +154,8 @@ func UpdateReview() *sql.Stmt {
 
 func Review() *sql.Stmt {
 	query := `
-	SELECT beneficial_point, honey_point, professor_point, is_team, is_presentation 
-	FROM review 
+	SELECT beneficial_point, honey_point, assignment, team_project, presentation, comment
+	FROM review
 	WHERE uid = $1
 	`
 	stmt, err := DB.Prepare(query)

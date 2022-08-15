@@ -13,12 +13,13 @@ type Handler struct{}
 type review struct {
 	Uid              int
 	Lecture_id       int
-	Beneficial_point int  //1~5
-	Honey_point      int  //1~5
-	Professor_point  int  //1~5
-	Is_team          bool //0, 1
-	Is_presentation  bool //0, 1
-	User_id          string
+	Writer           int
+	Beneficial_point int //1~5
+	Honey_point      int //1~5
+	Assignment       int //1~3
+	Team_project     int //1~3
+	Pressentation    int //1~3
+	Comment          string
 }
 
 var rev review
@@ -57,9 +58,10 @@ func (h *Handler) RowData(uid int) review {
 	row.Scan(
 		&rev.Beneficial_point,
 		&rev.Honey_point,
-		&rev.Professor_point,
-		&rev.Is_team,
-		&rev.Is_presentation)
+		&rev.Assignment,
+		&rev.Team_project,
+		&rev.Pressentation,
+		&rev.Comment)
 	return rev
 }
 
@@ -67,13 +69,14 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 	lect_id := (c.Params("id"))
 	c.BodyParser(&rev)
 	_, err := db.InsertReview().Exec(
+		lect_id,
+		c.Locals("uid").(string),
 		rev.Beneficial_point,
 		rev.Honey_point,
-		rev.Professor_point,
-		rev.Is_team,
-		rev.Is_presentation,
-		lect_id,
-		c.Locals("uid").(string))
+		rev.Assignment,
+		rev.Team_project,
+		rev.Pressentation,
+		rev.Comment)
 	if err != nil {
 		return c.SendString(err.Error())
 	}
@@ -84,16 +87,16 @@ func (h *Handler) SelectData(lectid string) []review {
 	row, err := db.ReviewAll().Query(lectid)
 	arr := make([]review, 0)
 	for row.Next() {
-		var rev review
 		row.Scan(
 			&rev.Uid,
+			&rev.Writer,
 			&rev.Lecture_id,
 			&rev.Beneficial_point,
 			&rev.Honey_point,
-			&rev.Professor_point,
-			&rev.Is_team,
-			&rev.Is_presentation,
-			&rev.User_id)
+			&rev.Assignment,
+			&rev.Team_project,
+			&rev.Pressentation,
+			&rev.Comment)
 		arr = append(arr, rev)
 	}
 	if err != nil || len(arr) == 0 {
@@ -110,9 +113,10 @@ func (h *Handler) UpdateData(c *fiber.Ctx) error {
 	_, err := db.UpdateReview().Exec(
 		rev.Beneficial_point,
 		rev.Honey_point,
-		rev.Professor_point,
-		rev.Is_team,
-		rev.Is_presentation,
+		&rev.Assignment,
+		&rev.Team_project,
+		&rev.Pressentation,
+		&rev.Comment,
 		uid)
 	if err != nil {
 		fmt.Print(err)
