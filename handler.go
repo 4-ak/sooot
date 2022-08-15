@@ -27,6 +27,7 @@ func NewServer() *Server {
 	}
 
 	server.App.Get("/", server.IndexPage)
+	server.App.Static("/static", "static")
 
 	loginHandler := login.Handler{}
 	registerHandler := register.Handler{}

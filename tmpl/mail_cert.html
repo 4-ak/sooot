@@ -1,101 +1,77 @@
 <!DOCTYPE html>
+<html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>대학 이메일 인증</title>
-
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" 
-    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
-     integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-
-    <script defer>
-        let a;
-        function mailSubmit() {
-            fetch('/mail-cert', {
-                method:'POST',
-                cache:'no-cache',
-                credentials:"include",
-                headers: {
-                    'Content-Type':"application/json"
-                },
-                body: JSON.stringify({
-                    mail:document.getElementById("mailbox").value
-                })
-            })
-            .then((response) => {
-                document.getElementById("keyarea").style.visibility="visible";
-                document.getElementById("cert-sendmail").style.display="none";
-                document.getElementById("MailMsg").innerText="메일 발송에 성공했습니다.";
-            })
-            .catch(error => console.log(error));
-            return false;
-        }
-
-        function keyCert() {
-            fetch('/key-cert', {
-                method:'POST',
-                cache:'no-cache',
-                credentials:"include",
-                redirect:"follow",
-                headers: {
-                    'Content-Type':"application/json"
-                },
-                body: JSON.stringify({
-                    key:document.getElementById("certKeybox").value
-                })
-            })
-            .then((response) => {
-                a=response;
-                console.log("성공");
-                document.getElementById("KeyCertMsg").innerText="성공!";
-                window.location.href = response.url;
-            })
-            .catch((error) => {
-                console.log("실패");
-                console.log(error);
-                document.getElementById("KeyCertMsg").innerText="번호를 잘못입력했습니다.";                
-            });
-            return false;
-        }
-    </script>
+    {{ template "layout/header" . }}
 
     <style>
-        html, body { height: 100%; }
-        body {
-            display: flex;
-            align-items: center;
-            background-color: #f4f4f0;
+        section.form-register {
+            display: none;
         }
-        #form-register {
-            width:100%;
-            max-width: 330px;
-            padding:10px;
-            margin:auto;
-        }
-
-        #form-register .form-floating label {
-            font-size: 0.85em;
-        }
-        section.form-register { display: none; }
-
-        .form-control:focus { box-shadow: none; }
 
         #keyarea {
             visibility: hidden;
         }
 
-        #form-register label {
-            text-align: left;
-        }
         .mail-guidance {
             font-size: 0.9em;
         }
     </style>
+
+    <script defer>
+        function mailSubmit() {
+            fetch('/mail-cert', {
+                method: 'POST',
+                cache: 'no-cache',
+                credentials: "include",
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify({
+                    mail: document.getElementById("mailbox").value
+                })
+            })
+                .then((response) => {
+                    document.getElementById("keyarea").style.visibility = "visible";
+                    document.getElementById("cert-sendmail").style.display = "none";
+                    document.getElementById("MailMsg").innerText = "메일 발송에 성공했습니다.";
+                })
+                .catch(error => console.log(error));
+            return false;
+        }
+
+        function keyCert() {
+            fetch('/key-cert', {
+                method: 'POST',
+                cache: 'no-cache',
+                credentials: "include",
+                redirect: "follow",
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify({
+                    key: document.getElementById("certKeybox").value
+                })
+            })
+                .then((response) => {
+                    console.log("성공");
+                    document.getElementById("KeyCertMsg").innerText = "성공!";
+                    window.location.href = response.url;
+                })
+                .catch((error) => {
+                    console.log("실패");
+                    console.log(error);
+                    document.getElementById("KeyCertMsg").innerText = "번호를 잘못입력했습니다.";
+                });
+            return false;
+        }
+    </script>
+
+    <title>대학 이메일 인증</title>
 </head>
-<body class="text-center">
-    <main id="form-register">
+
+<body class="center-container text-center">
+    <main id="form-register" class="center-content mw-3">
         <h1>회원가입</h1>
         <p class="mail-guidance">
             학생 이메일을 통한 인증이 필요합니다.</br>
@@ -107,8 +83,8 @@
             <label for="mailbox">아이디(@live.wsu.ac.kr)</label>
             <button class="btn btn-primary mt-4" id="cert-sendmail">인증번호 발송</button>
         </form>
-        
-        <form action="/key-cert" method="post" class="form-floating"id="keyarea" onsubmit="return keyCert()">
+
+        <form action="/key-cert" method="post" class="form-floating" id="keyarea" onsubmit="return keyCert()">
             <input type="text" class="form-control" name="certKey" id="certKeybox">
             <label for="certKeybox">인증번호</label>
             <span id="MailMsg">&nbsp;</span>
@@ -117,4 +93,5 @@
         </form>
     </main>
 </body>
+
 </html>

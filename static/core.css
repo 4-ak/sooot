@@ -1,0 +1,82 @@
+/* page default setting */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background-color: #f4f4f0;
+}
+
+
+/* container */
+.center-container {
+    display: flex; /* vertical center */
+}
+
+.center-content {
+    width: 100%;
+    padding: 10px;
+    margin: auto;
+}
+
+
+/* bootstrap addtional setting */
+.non-box-shadow:focus,
+input:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+    box-shadow: none;
+}
+
+.form-floating label { 
+    font-size: 0.85rem;
+    text-align: left;
+ }
+
+
+ /* text-group */
+ .text-group { margin-bottom: 10px;}
+.text-group .text-group-normal {
+    margin-bottom: -1px;
+    border-radius: 0px;
+}
+
+.text-group .text-group-first {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.text-group .text-group-last{
+    border-top-right-radius: 0;
+    border-top-left-radius: 0; 
+}
+
+
+/* list-group-item */
+.list-group-item .list-item-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+.list-group-item .list-item-content {
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+.list-group-item .list-item-detail {
+    font-size: 0.75rem;
+}
+
+
+/* max-width */
+.mw-3 {
+    max-width: 330px;
+}
+
+.mw-4 {
+    max-width: 440px;
+}
+
+.mw-5 {
+    max-width: 550px;
+}
