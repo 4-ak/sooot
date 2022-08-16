@@ -1,25 +1,13 @@
 package login
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/4-ak/sooot/db"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
-)
-
-const (
-	loginFailCode = `
-	<head>
-		<meta charset="UTF-8">
-		<script>
-			if(!alert("존재하지 않는 계정이거나, 비밀번호가 틀렸습니다.")) {
-				window.location = "/login";
-			}
-		</script>
-	</head>
-	`
 )
 
 type Handler struct{}
@@ -40,6 +28,9 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&form); err != nil {
 		return h.LoginFailed(c, err, 1)
+	}
+	if form.Mail == "" || form.Pass == "" {
+		return h.LoginFailed(c, errors.New("empty form"), 1)
 	}
 
 	row := db.AccountWithPass().QueryRow(c.FormValue("email_id", ""))
@@ -68,9 +59,11 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 
 func (h *Handler) LoginFailed(c *fiber.Ctx, err error, code int) error {
 	fmt.Printf("[error] login(%v):%v", code, err)
-	c.Accepts("html")
-	c.Format(loginFailCode)
-	return c.SendStatus(fiber.StatusUnauthorized)
+	c.Status(fiber.StatusConflict)
+	return c.Render("redirect_alert", fiber.Map{
+		"Msg":      "존재하지 않은 계정이거나, 입력된 정보가 틀렸습니다.",
+		"Location": "/login",
+	})
 }
 
 func (h *Handler) MakeToken(uid, mail string) (string, error) {
