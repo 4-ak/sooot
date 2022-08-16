@@ -101,7 +101,6 @@ func (h *Handler) SelectData(lectid string) []review {
 	}
 	if err != nil || len(arr) == 0 {
 		fmt.Println(err)
-		return nil
 	}
 	return arr
 }

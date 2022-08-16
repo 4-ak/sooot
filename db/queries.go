@@ -58,7 +58,7 @@ func LectureAll() *sql.Stmt {
 func InsertLecture() *sql.Stmt {
 	query := `
 	INSERT INTO lecture(department, name, professor_name, semester, credit, parent) 
-	VALUES(0, $1, $2, $3, $4, 0)
+	VALUES($1, $2, $3, $4, $5, 0)
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {

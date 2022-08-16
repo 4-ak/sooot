@@ -4,23 +4,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/model"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Handler struct{}
-
-type lecture struct {
-	Uid            int
-	Department     int
-	Name           string
-	Professor_name string
-	Semester       int
-	Credit         int
-	Parent         int
-}
-
-var lect lecture
 
 func (h *Handler) Create(c *fiber.Ctx) error {
 	return c.Render("editlecture", fiber.Map{
@@ -29,81 +17,41 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 }
 
 func (h *Handler) Lecture(c *fiber.Ctx) error {
+	lect := model.NewLecture()
 	return c.Render("lecture", fiber.Map{
-		"LectureData": h.SelectData(),
+		"LectureData": lect.SelectData(),
 	})
 }
 
 func (h *Handler) Update(c *fiber.Ctx) error {
+	lect := model.NewLecture()
 	uid, _ := strconv.Atoi(c.Params("id"))
+	lect.RowData(uid)
 	return c.Render("editlecture", fiber.Map{
-		"LectureData": h.RowData(uid),
+		"LectureData": lect,
 		"isUpdate":    true,
 	})
 }
 
-func (h *Handler) SelectData() []lecture {
-	row, err := db.LectureAll().Query()
-	arr := make([]lecture, 0)
-	for row.Next() {
-		row.Scan(
-			&lect.Uid,
-			&lect.Name,
-			&lect.Professor_name,
-			&lect.Semester,
-			&lect.Credit)
-		arr = append(arr, lect)
-	}
-	if err != nil {
-		fmt.Println(err)
-	}
-	return arr
+func (h *Handler) UpdateData(c *fiber.Ctx) error {
+	lect := model.NewLecture()
+	uid, _ := strconv.Atoi(c.Params("id"))
+	c.BodyParser(&lect)
+	fmt.Println(lect)
+	lect.Update(uid)
+	return c.Redirect("/lecture")
 }
 
 func (h *Handler) InsertData(c *fiber.Ctx) error {
+	lect := model.NewLecture()
 	c.BodyParser(&lect)
-	_, err := db.InsertLecture().Exec(lect.Name, lect.Professor_name, lect.Semester, lect.Credit)
-	if err != nil {
-		return c.SendString("INSERT ERROR")
-	}
+	lect.Insert()
 	return c.Redirect("/lecture")
-}
-
-func (h *Handler) UpdateData(c *fiber.Ctx) error {
-	uid, _ := strconv.Atoi(c.Params("id"))
-	c.BodyParser(&lect)
-	_, err := db.UpdateLecture().Exec(
-		lect.Name,
-		lect.Professor_name,
-		lect.Semester,
-		lect.Credit,
-		uid)
-	if err != nil {
-		fmt.Print(err)
-		return c.SendString("UPDATE ERROR")
-	}
-	return c.Redirect("/lecture")
-}
-
-func (h *Handler) RowData(uid int) lecture {
-	row := db.Lecture().QueryRow(uid)
-	row.Scan(
-		&lect.Uid,
-		&lect.Department,
-		&lect.Name,
-		&lect.Professor_name,
-		&lect.Semester,
-		&lect.Credit,
-		&lect.Parent)
-	return lect
 }
 
 func (h *Handler) DeleteData(c *fiber.Ctx) error {
+	lect := model.NewLecture()
 	uid, _ := strconv.Atoi(c.Params("id"))
-	_, err := db.DeleteLecture().Exec(uid)
-	if err != nil {
-		fmt.Print(err)
-		return c.SendString("DELETE ERROR")
-	}
+	lect.Delete(uid)
 	return c.Redirect("/lecture")
 }
