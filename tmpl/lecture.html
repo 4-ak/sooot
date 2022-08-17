@@ -15,7 +15,7 @@
             <button class="btn btn-priamry bg-light"><i class="bi bi-search"></i></button>
         </form>
         <div class="list-group text-left mb-4">
-            {{ range .LectureData }}
+            {{ range .LectureData}}
             <a href="/review/{{ .Uid }}" class="list-group-item list-group-item-action gap-3 py-2">
                 <header class="d-flex gap-1 align-items-end">
                     <h4 class="item-title mb-auto gap-1">{{ .Name }}</h4>
@@ -27,12 +27,13 @@
                 <article>
                     <div class="list-item-content">{{ .Professor_name }} 교수님</div>
                     <div class="d-flex gap-2 list-item-detail">
-                        <div>&nbsp; {{ .Grade }}학점</div>
-                        <div>{{ .Category }} </div>
+                        <div>&nbsp; {{ .Credit }}학점</div>
                         <div>*4.5(10개)</div>
+                        <div>{{.Department}} </div>
                     </div>
                 </article>
             </a>
+            <a href="/lecture/u/{{.Uid}}">수정</a>
             {{ end }}
         </div>
         <a href="/lecture/c" class="btn btn-primary w-100">+</a>

@@ -42,8 +42,8 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		return h.failure(c, err, 3)
 	}
 
-	if _, err := db.RegisterAccount(user.ID, hashed); err != nil {
-		return h.failure(c, err, 4)
+	if _, err := db.RegisterAccount().Exec(user.ID, hashed); err != nil {
+		return h.failure(c, err, 3)
 	}
 
 	fmt.Printf("[정보] 계정 생성 성공 : %v\n", user.ID)

@@ -6,8 +6,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.35.0
 	github.com/gofiber/template v1.6.29
 	github.com/golang-jwt/jwt/v4 v4.4.2
-	github.com/lib/pq v1.10.6
-	github.com/mattn/go-sqlite3 v1.14.14
+	github.com/lib/pq v1.10.6	
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 )
 

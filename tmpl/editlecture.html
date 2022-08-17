@@ -10,6 +10,11 @@
 <form method="post">
     <table border="1">
         <tr>
+            <td>Department</td>
+            {{if .isUpdate}}<td>{{.LectureData.Department}}</td>{{else}}{{end}}
+            <td><input type="text" name="Department"></td>
+        </tr>
+        <tr>
             <td>Name</td>
             {{if .isUpdate}}<td>{{.LectureData.Name}}</td>{{else}}{{end}}
             <td><input type="text" name="Name"></td>    
@@ -20,14 +25,9 @@
             <td><input type="text" name="Professor_name"></td>
         </tr>
         <tr>
-            <td>Season</td>
-            {{if .isUpdate}}<td>{{.LectureData.Season}}</td>{{else}}{{end}}
-            <td><input type="text" name="Season" value="1"></td>
-        </tr>
-        <tr>
-            <td>Grade</td>
-            {{if .isUpdate}}<td>{{.LectureData.Grade}}</td>{{else}}{{end}}
-            <td><input type="text" name="Grade" value="2"></td>
+            <td>Semester</td>
+            {{if .isUpdate}}<td>{{.LectureData.Semester}}</td>{{else}}{{end}}
+            <td><input type="text" name="Semester" value="202202"></td>
         </tr>
         <tr>
             <td>Credit</td>
@@ -35,9 +35,9 @@
             <td><input type="text" name="Credit" value="1"></td>
         </tr>
         <tr>
-            <td>Category</td>
-            {{if .isUpdate}}<td>{{.LectureData.Category}}</td>{{else}}{{end}}
-            <td><input type="text" name="Category" value="2"></td>
+            <td>Parent</td>
+            {{if .isUpdate}}<td>{{.LectureData.Parent}}</td>{{else}}{{end}}
+            <td><input type="text" name="Parent" value="0"></td>
         </tr>
     </table>
     <input type="submit">

@@ -33,7 +33,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return h.LoginFailed(c, errors.New("empty form"), 1)
 	}
 
-	row := db.AccountWithPass(c.FormValue("email_id", ""))
+	row := db.AccountWithPass().QueryRow(c.FormValue("email_id", ""))
 
 	if err := row.Scan(&stored.UID, &stored.Pass); err != nil {
 		return h.LoginFailed(c, err, 2)
