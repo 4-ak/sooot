@@ -10,38 +10,75 @@
 <form method="post">
     <table border="1">
         <tr>
-            <td>Department</td>
-            {{if .isUpdate}}<td>{{.LectureData.Department}}</td>{{else}}{{end}}
-            <td><input type="text" name="Department"></td>
-        </tr>
-        <tr>
             <td>Name</td>
             {{if .isUpdate}}<td>{{.LectureData.Name}}</td>{{else}}{{end}}
-            <td><input type="text" name="Name"></td>    
+            <td><input type="text" name="Name" list="lb_list" id="lecture_base" onchange="inputProfessor()"></td>
+            <datalist id="lb_list">
+                {{range .Lecture_base}}
+                <option value="{{.Name}}">{{.Professor}}/{{.Major}}</option>
+                {{end}}
+            </datalist>
         </tr>
         <tr>
-            <td>Professor_name</td>
+            <td>Professor</td>
             {{if .isUpdate}}<td>{{.LectureData.Professor_name}}</td>{{else}}{{end}}
-            <td><input type="text" name="Professor_name"></td>
+            <td><input type="text" name="Professor" list="professor_list" id="professor"></td>
+            <datalist id="professor_list">
+
+            </datalist>
+        </tr>
+        <tr>
+            <td>Year</td>
+            {{if .isUpdate}}<td>{{.LectureData.Semester}}</td>{{else}}{{end}}
+            <td><input type="text" name="Year" value="2022"></td>
         </tr>
         <tr>
             <td>Semester</td>
             {{if .isUpdate}}<td>{{.LectureData.Semester}}</td>{{else}}{{end}}
-            <td><input type="text" name="Semester" value="202202"></td>
+            <td><input type="text" name="Semester" list="semester_list"></td>
+            <datalist id="semester_list">
+                {{range .Semester}}
+                <option value="{{.Name}}"></option>
+                {{end}}
+            </datalist>
         </tr>
         <tr>
             <td>Credit</td>
             {{if .isUpdate}}<td>{{.LectureData.Credit}}</td>{{else}}{{end}}
-            <td><input type="text" name="Credit" value="1"></td>
+            <td><input type="text" name="Credit" value="3"></td>
         </tr>
         <tr>
-            <td>Parent</td>
-            {{if .isUpdate}}<td>{{.LectureData.Parent}}</td>{{else}}{{end}}
-            <td><input type="text" name="Parent" value="0"></td>
+            <td>Major</td>
+            {{if .isUpdate}}<td>{{.LectureData.Department}}</td>{{else}}{{end}}
+            <td><input type="text" name="Major" list="major_list"></td>
+            <datalist id="major_list">
+                {{range .Major}}
+                <option value="{{.Name}}"></option>
+                {{end}}
+            </datalist>   
         </tr>
     </table>
     <input type="submit">
 
 </form>
+<script>
+    function inputProfessor(){
+        var lecture_name = document.getElementById('lecture_base').value;
+        var options = document.getElementById('lb_list').childNodes;
+        var name = Array();
+        var i = 0;
+        for(i = 0; i<options.length; i++){
+            if(options[i].value == lecture_name){
+                name.push(options[i].textContent.split("/")[0])
+            }
+        }
+        let datalist = document.getElementById('professor_list');
+        for(i = 0; i<name.length; i++){
+            let new_option = document.createElement('option');
+            new_option.setAttribute('value', name[i]);
+            datalist.appendChild(new_option);
+        }
+    }  
+</script>
 </body>
 </html>

@@ -46,7 +46,8 @@ func AccountExists() *sql.Stmt {
 func LectureAll() *sql.Stmt {
 	query := `
 	SELECT *
-	FROM lecture
+	FROM lecture l, lecture_base lb
+	WHERE l.base = lb.uid;
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {
@@ -57,8 +58,14 @@ func LectureAll() *sql.Stmt {
 
 func InsertLecture() *sql.Stmt {
 	query := `
-	INSERT INTO lecture(department, name, professor_name, semester, credit, parent) 
-	VALUES($1, $2, $3, $4, $5, 0)
+	INSERT INTO lecture(base, year, semester, credit, major)
+	SELECT lb.uid, $3, s.uid, $5, m.uid
+	FROM lecture_base lb, semester s, major m
+	WHERE lb.name = $1 AND lb.professor = (
+		SELECT p.uid
+		FROM professor p
+		WHERE p.name = $2
+	) AND s.name= $4 AND m.name = $6;
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {
@@ -70,8 +77,9 @@ func InsertLecture() *sql.Stmt {
 func UpdateLecture() *sql.Stmt {
 	query := `
 	UPDATE lecture 
-	SET name = $1, professor_name = $2, semester = $3, credit = $4  
+	SET year = $1, semester = $2, credit = $3, major = $4  
 	WHERE uid = $5
+	RETURNING base
 	`
 	stmt, err := DB.Prepare(query)
 	if err != nil {
@@ -175,3 +183,104 @@ func DeleteReview() *sql.Stmt {
 	}
 	return stmt
 }
+
+func InsertLecture_base() *sql.Stmt {
+	query := `
+	INSERT INTO lecture_base(name, professor)
+	VALUES($1, $2)
+	RETURNING uid
+	`
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
+
+func UpdateLecture_base() *sql.Stmt {
+	query := `
+	UPDATE lecture_base
+	SET name = $1, professor = $2
+	WHERE uid = $3
+	`
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
+
+func DeleteLecture_base() *sql.Stmt {
+	query := `
+	DELETE FROM lecture_base WHERE uid = $1
+	`
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
+
+func Lecture_baseAll() *sql.Stmt {
+	query := `
+	SELECT lb.name, p.name, m.name
+	FROM lecture_base lb, professor p, major m
+    WHERE lb.professor = p.uid AND p.major = (
+        SELECT m.uid
+    )
+    ORDER BY lb.name ASC;
+	`
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
+
+func MajorAll() *sql.Stmt {
+	query := `
+	SELECT name
+	FROM major;
+	`
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
+
+func ProfessorAll() *sql.Stmt {
+	query := `
+	SELECT p.name, m.name
+	FROM professor p, major m
+    WHERE p.major = m.uid;
+	`
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
+
+func SemesterAll() *sql.Stmt {
+	query := `
+	SELECT name
+	FROM semester;
+	`
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
+
+// func () *sql.Stmt {
+// 	query := `
+
+// `
+// 	stmt, err := DB.Prepare(query)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	return stmt
+// }
