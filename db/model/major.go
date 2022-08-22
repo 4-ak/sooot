@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 )
 
 type Major struct {
@@ -17,7 +17,7 @@ func NewMajor() Major {
 }
 
 func (s *Major) Major() []Major {
-	rows, err := db.MajorAll().Query()
+	rows, err := queries.MajorAll().Query()
 	arr := make([]Major, 0)
 	for rows.Next() {
 		rows.Scan(

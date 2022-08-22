@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 )
@@ -42,7 +42,7 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		return h.failure(c, err, 3)
 	}
 
-	if _, err := db.RegisterAccount().Exec(user.ID, hashed); err != nil {
+	if _, err := queries.RegisterAccount().Exec(user.ID, hashed); err != nil {
 		return h.failure(c, err, 3)
 	}
 

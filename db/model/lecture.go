@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 )
 
 type Lecture struct {
@@ -17,7 +17,7 @@ func NewLecture() Lecture {
 }
 
 func (l *Lecture) SelectData() []Lecture {
-	rows, err := db.LectureAll().Query()
+	rows, err := queries.LectureAll().Query()
 	arr := make([]Lecture, 0)
 	for rows.Next() {
 		rows.Scan(
@@ -39,7 +39,7 @@ func (l *Lecture) SelectData() []Lecture {
 }
 
 func (l *Lecture) RowData(uid int) {
-	row := db.Lecture().QueryRow(uid)
+	row := queries.Lecture().QueryRow(uid)
 	row.Scan(
 		// &l.Data.Uid,
 		&l.Data.Year,

@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 )
 
 type Lecture_base struct {
@@ -14,7 +14,7 @@ type Lecture_base struct {
 }
 
 func (lb *Lecture_base) Insert() {
-	err := db.InsertLecture_base().QueryRow(
+	err := queries.InsertLecture_base().QueryRow(
 		lb.Name,
 		lb.Professor).Scan(
 		&lb.Uid)
@@ -24,7 +24,7 @@ func (lb *Lecture_base) Insert() {
 }
 
 func (lb *Lecture_base) Update(uid int) {
-	_, err := db.UpdateLecture_base().Exec(
+	_, err := queries.UpdateLecture_base().Exec(
 		lb.Name,
 		lb.Professor,
 		uid)
@@ -35,14 +35,14 @@ func (lb *Lecture_base) Update(uid int) {
 }
 
 func (lb *Lecture_base) Delete(uid int) {
-	_, err := db.DeleteLecture_base().Exec(uid)
+	_, err := queries.DeleteLecture_base().Exec(uid)
 	if err != nil {
 		fmt.Print(err)
 	}
 }
 
 func (lb *Lecture_base) Lecture_base() []Lecture_base {
-	rows, err := db.Lecture_baseAll().Query()
+	rows, err := queries.Lecture_baseAll().Query()
 	arr := make([]Lecture_base, 0)
 	for rows.Next() {
 		rows.Scan(

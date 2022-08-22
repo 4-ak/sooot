@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -33,7 +33,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return h.LoginFailed(c, errors.New("empty form"), 1)
 	}
 
-	row := db.AccountWithPass().QueryRow(c.FormValue("email_id", ""))
+	row := queries.AccountWithPass().QueryRow(c.FormValue("email_id", ""))
 
 	if err := row.Scan(&stored.UID, &stored.Pass); err != nil {
 		return h.LoginFailed(c, err, 2)

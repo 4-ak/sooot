@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 )
 
 type Semester struct {
@@ -17,7 +17,7 @@ func NewSemester() Semester {
 }
 
 func (s *Semester) Semester() []Semester {
-	rows, err := db.SemesterAll().Query()
+	rows, err := queries.SemesterAll().Query()
 	arr := make([]Semester, 0)
 	for rows.Next() {
 		rows.Scan(
