@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 )
 
 type Review struct {
@@ -24,7 +24,7 @@ func NewReview() Review {
 }
 
 func (r *Review) SelectData(lect_id string) []Review {
-	row, err := db.ReviewAll().Query(lect_id)
+	row, err := queries.ReviewAll().Query(lect_id)
 	arr := make([]Review, 0)
 	for row.Next() {
 		row.Scan(
@@ -46,7 +46,7 @@ func (r *Review) SelectData(lect_id string) []Review {
 }
 
 func (r *Review) Insert(lect_id, uid string) {
-	_, err := db.InsertReview().Exec(
+	_, err := queries.InsertReview().Exec(
 		lect_id,
 		uid,
 		r.Beneficial_point,
@@ -61,7 +61,7 @@ func (r *Review) Insert(lect_id, uid string) {
 }
 
 func (r *Review) Update(uid string) {
-	_, err := db.UpdateReview().Exec(
+	_, err := queries.UpdateReview().Exec(
 		r.Beneficial_point,
 		r.Honey_point,
 		r.Assignment,
@@ -75,14 +75,14 @@ func (r *Review) Update(uid string) {
 }
 
 func (r *Review) Delete(uid string) {
-	_, err := db.DeleteReview().Exec(uid)
+	_, err := queries.DeleteReview().Exec(uid)
 	if err != nil {
 		fmt.Print(err)
 	}
 }
 
 func (r *Review) RowData(uid int) {
-	row := db.Review().QueryRow(uid)
+	row := queries.Review().QueryRow(uid)
 	row.Scan(
 		&r.Beneficial_point,
 		&r.Honey_point,

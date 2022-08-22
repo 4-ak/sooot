@@ -16,24 +16,24 @@
         </form>
         <div class="list-group text-left mb-4">
             {{ range .LectureData}}
-            <a href="/review/{{ .Uid }}" class="list-group-item list-group-item-action gap-3 py-2">
+            <a href="/review/{{ .Data.Uid }}" class="list-group-item list-group-item-action gap-3 py-2">
                 <header class="d-flex gap-1 align-items-end">
-                    <h4 class="item-title mb-auto gap-1">{{ .Name }}</h4>
+                    <h4 class="item-title mb-auto gap-1">{{ .Base.Name }}</h4>
                     <div class="d-flex list-item-subtitle">
                         <div>2019년</div>
                         <div>2학기</div>
                     </div>
                 </header>
                 <article>
-                    <div class="list-item-content">{{ .Professor_name }} 교수님</div>
+                    <div class="list-item-content">{{ .Base.Professor }} 교수님</div>
                     <div class="d-flex gap-2 list-item-detail">
-                        <div>&nbsp; {{ .Credit }}학점</div>
+                        <div>&nbsp; {{ .Data.Credit }}학점</div>
                         <div>*4.5(10개)</div>
-                        <div>{{.Department}} </div>
+                        <div>{{.Data.Major}} </div>
                     </div>
                 </article>
             </a>
-            <a href="/lecture/u/{{.Uid}}">수정</a>
+            <a href="/lecture/u/{{.Data.Uid}}">수정</a>
             {{ end }}
         </div>
         <a href="/lecture/c" class="btn btn-primary w-100">+</a>

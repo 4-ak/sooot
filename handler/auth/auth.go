@@ -3,7 +3,7 @@ package authtoken
 import (
 	"fmt"
 
-	"github.com/4-ak/sooot/db"
+	"github.com/4-ak/sooot/db/queries"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -34,7 +34,7 @@ func AuthUser(c *fiber.Ctx) error {
 		return c.Redirect("/login", 302)
 	}
 
-	err = db.AccountExists().QueryRow(uid, mail).Scan(&uid, &mail)
+	err = queries.AccountExists().QueryRow(uid, mail).Scan(&uid, &mail)
 	if err != nil {
 		fmt.Println(err)
 		c.ClearCookie("token")
