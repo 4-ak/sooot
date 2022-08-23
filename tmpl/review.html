@@ -16,28 +16,32 @@
             <th>강의 이름</th>
             <th>유익함 점수</th>
             <th>꿀강 점수</th>
-            <th>교수님 인싸력 점수</th>
-            <th>팀플 여부</th>
-            <th>발표 여부</th>
+            <th>과제</th>
+            <th>팀플</th>
+            <th>발표</th>
+            <td>코멘트</td>
             <th>작성자</th>
+            <th>작성일</th>
         </tr>
-        {{range .ReviewData }}
+        {{range .ReviewData}}
         <tr>
-            {{if eq $.Userid .User_id}}
-            <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/u">UPDATE</a></td>
-            <td><a href="/review/{{.Lecture_id}}/{{.Uid}}/d">DELETE</a></td>
+            {{if eq $.Userid .Writer}}
+            <td><a href="/review/{{.Lecture_uid}}/{{.Uid}}/u">UPDATE</a></td>
+            <td><a href="/review/{{.Lecture_uid}}/{{.Uid}}/d">DELETE</a></td>
             {{else}}
             <td></td>
             <td></td>
             {{end}}
             <td>{{.Uid}}</td>
-            <td>{{.Lecture_id }}</a></td>
-            <td>{{.Beneficial_point}}</td>
-            <td>{{.Honey_point}}</td>
-            <td>{{.Professor_point}}</td>
-            <td>{{.Is_team }}</td>
-            <td>{{.Is_presentation}}</td>
-            <td>{{.User_id}}</td>
+            <td>{{.Lecture_name }}</a></td>
+            <td>{{.Beneficial}}</td>
+            <td>{{.Honey}}</td>
+            <td>{{.Assignment}}</td>
+            <td>{{.Team_project}}</td>
+            <td>{{.Presentation}}</td>
+            <td>{{.Comment}}</td>
+            <td>{{.Writer}}</td>
+            <td>{{.Created_at }}</td>
         </tr>
         {{end}}
     </table>
