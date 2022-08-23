@@ -12,15 +12,14 @@ type Handler struct{}
 
 func (h *Handler) Review(c *fiber.Ctx) error {
 	review := model.NewReview()
-	lect_id := (c.Params("id"))
-	userid, ok := c.Locals("uid").(string)
-	if !ok {
-		userid = "-1"
+	lect_id := (c.Params("lectid"))
+	userid, ok := strconv.Atoi(c.Locals("uid").(string))
+	if ok != nil {
+		userid = -1
 		fmt.Print("userid error")
 	}
-	review.SelectData(lect_id)
 	return c.Render("review", fiber.Map{
-		"ReviewData": review,
+		"ReviewData": review.SelectData(lect_id),
 		"Lectid":     lect_id,
 		"Userid":     userid,
 	})
@@ -44,7 +43,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 
 func (h *Handler) InsertData(c *fiber.Ctx) error {
 	review := model.NewReview()
-	lect_id := (c.Params("id"))
+	lect_id := c.Params("lectid")
 	c.BodyParser(&review)
 	review.Insert(lect_id, c.Locals("uid").(string))
 	return c.Redirect("/review/" + lect_id)
