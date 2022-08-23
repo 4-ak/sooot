@@ -9,38 +9,9 @@ import (
 
 func ReviewAll() *sql.Stmt {
 	query := `
-	SELECT r.uid, r.lecture , r.writer, r.beneficial, r.honey, r.assignment, r.team_project, r.presentation, r.comment, r.created_at, lb.name
-	FROM review r, lecture_base lb, lecture l
-	WHERE r.lecture = $1 AND l.uid = r.lecture AND l.base = lb.uid;
-	`
-	stmt, err := db.DB.Prepare(query)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return stmt
-}
-
-func ReviewList() *sql.Stmt {
-	query := `
-	SELECT writer, beneficial, honey, assignment. team_project, presentation
-	FROM review
-	WHERE lecture = $1
-	`
-	stmt, err := db.DB.Prepare(query)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return stmt
-	//모든 별점을 더해서 보여주는 방식은?
-	//이게 reviewall로 대체?
-	//lecture 외래키를 lecture_base의 uid로 옮겨야 할듯?
-}
-
-func ReviewContent() *sql.Stmt {
-	query := `
-	SELECT writer, beneficial, honey, assignment. team_project, presentation, comment, created_at
-	FROM review
-	WHERE lecture = $1
+	SELECT * 
+	FROM review 
+	WHERE lecture_id = $1
 	`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
@@ -53,10 +24,10 @@ func InsertReview() *sql.Stmt {
 	query := `
 	INSERT INTO 
 	review(
-		lecture,
+		lecture_id, 
 		writer, 
-		beneficial, 
-		honey, 
+		beneficial_point, 
+		honey_point, 
 		assignment, 
 		team_project, 
 		presentation, 
@@ -73,12 +44,7 @@ func InsertReview() *sql.Stmt {
 func UpdateReview() *sql.Stmt {
 	query := `
 	UPDATE review
-	SET beneficial = $1, 
-		honey = $2, 
-		assignment = $3,
-		team_project = $4, 
-		presentation = $5,
-		comment = $6 
+	SET beneficial_point = $1, honey_point = $2, assignment = $3, team_project = $4, presentation = $5, comment = $6 
 	WHERE uid = $7
 	`
 	stmt, err := db.DB.Prepare(query)
@@ -90,7 +56,7 @@ func UpdateReview() *sql.Stmt {
 
 func Review() *sql.Stmt {
 	query := `
-	SELECT beneficial, honey, assignment, team_project, presentation, comment
+	SELECT beneficial_point, honey_point, assignment, team_project, presentation, comment
 	FROM review
 	WHERE uid = $1
 	`

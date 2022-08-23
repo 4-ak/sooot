@@ -54,9 +54,9 @@ func NewServer() *Server {
 	reviewHandler := review.Handler{}
 
 	review := server.App.Group("/review", authtoken.AuthUser)
-	review.Get("/:lectid", reviewHandler.Review)
-	review.Get("/:lectid/c", reviewHandler.Create)
-	review.Post("/:lectid/c", reviewHandler.InsertData)
+	review.Get("/:id", reviewHandler.Review)
+	review.Get("/:id/c", reviewHandler.Create)
+	review.Post("/:id/c", reviewHandler.InsertData)
 	review.Get("/:lectid/:uid/u", reviewHandler.Update)
 	review.Post("/:lectid/:uid/u", reviewHandler.UpdateData)
 	review.Get("/:lectid/:uid/d", reviewHandler.DeleteData)
