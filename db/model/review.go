@@ -49,7 +49,7 @@ func (r *Review) SelectData(lect_id string) []Review {
 	return arr
 }
 
-func (r *Review) Insert(lect_uid, account_uid string) {
+func (r *Review) Insert(lect_uid int, account_uid string) {
 	_, err := queries.InsertReview().Exec(
 		lect_uid,
 		account_uid,

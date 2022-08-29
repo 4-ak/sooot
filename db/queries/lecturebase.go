@@ -46,7 +46,7 @@ func DeleteLecture_base() *sql.Stmt {
 
 func Lecture_baseAll() *sql.Stmt {
 	query := `
-	SELECT lb.name, p.name, m.name
+	SELECT lb.uid, lb.name, p.name, m.name
 	FROM lecture_base lb, professor p, major m
     WHERE lb.professor = p.uid AND p.major = (
         SELECT m.uid

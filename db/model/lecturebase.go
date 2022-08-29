@@ -46,6 +46,7 @@ func (lb *Lecture_base) Lecture_base() []Lecture_base {
 	arr := make([]Lecture_base, 0)
 	for rows.Next() {
 		rows.Scan(
+			&lb.Uid,
 			&lb.Name,
 			&lb.Professor,
 			&lb.Major)

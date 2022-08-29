@@ -45,3 +45,37 @@ func DeleteLecture() *sql.Stmt {
 	}
 	return stmt
 }
+
+func CompareLecture() *sql.Stmt {
+	query := `
+	SELECT uid
+	FROM lecture
+	WHERE base = (
+	    SELECT uid
+	    FROM lecture_base
+	    WHERE name = $1 
+	        AND professor = (
+	            SELECT uid
+	            FROM professor
+	            WHERE name = $2
+	        )
+	    )
+		AND year = $3
+	    AND semester = (
+	        SELECT uid
+	        FROM semester
+	        WHERE name = $4
+	    ) 
+	    AND credit = $5 
+	    AND major = (
+	        SELECT uid
+	        FROM major
+	        WHERE name = $6
+	    )
+	`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}

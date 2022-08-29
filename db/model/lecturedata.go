@@ -17,13 +17,14 @@ type Lecture_data struct {
 
 func (ld *Lecture_data) Insert(name, professor string) {
 	ld.Base = name
-	_, err := queries.InsertLecture().Exec(
+	err := queries.InsertLecture().QueryRow(
 		ld.Base,
 		professor,
 		ld.Year,
 		ld.Semester,
 		ld.Credit,
-		ld.Major)
+		ld.Major).Scan(
+		&ld.Uid)
 	if err != nil {
 		fmt.Println(err)
 	}
