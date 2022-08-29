@@ -42,6 +42,7 @@ func NewServer() *Server {
 	auth.Post("/registration", registerHandler.Register)
 
 	lectureHandler := lecture.Handler{}
+	lectureHandler.CacheLecture()
 
 	lecture := server.App.Group("/lecture", authtoken.AuthUser)
 	lecture.Get("/", lectureHandler.Lecture)
@@ -50,6 +51,8 @@ func NewServer() *Server {
 	lecture.Post("/u/:id", lectureHandler.UpdateData)
 	lecture.Get("/u/:id", lectureHandler.Update)
 	lecture.Get("/d/:id", lectureHandler.DeleteData)
+	lecture.Get("/ql", lectureHandler.GetLectures)
+	lecture.Get("/qm", lectureHandler.GetMajor)
 
 	reviewHandler := review.Handler{}
 
