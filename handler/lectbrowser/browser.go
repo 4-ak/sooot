@@ -1,7 +1,6 @@
 package lectbrowser
 
 import (
-	"fmt"
 	"strings"
 	"unicode/utf8"
 
@@ -20,7 +19,6 @@ type LectureBrowser struct {
 type Handler struct{}
 
 func (lb *LectureBrowser) Init(lectures []model.Lecture_base) {
-	fmt.Println(lectures)
 	for i, v := range lectures {
 		lb.data = append(lb.data, LectureNode{
 			Data:       &lectures[i],

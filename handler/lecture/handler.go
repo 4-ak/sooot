@@ -58,11 +58,9 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 	c.BodyParser(&review)
 	lect.CompareData()
 	if lect.Data.Uid == 0 {
-		fmt.Println(lect.Data)
 		lect.Data.Insert(lect.Base.Name, lect.Base.Professor)
 		review.Insert(lect.Data.Uid, c.Locals("uid").(string))
 	} else {
-		fmt.Println(lect.Data)
 		review.Insert(lect.Data.Uid, c.Locals("uid").(string))
 	}
 	return c.Redirect("/lecture")

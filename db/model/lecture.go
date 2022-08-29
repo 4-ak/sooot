@@ -61,5 +61,4 @@ func (l *Lecture) CompareData() {
 		l.Data.Credit,
 		l.Data.Major)
 	row.Scan(&l.Data.Uid)
-
 }
