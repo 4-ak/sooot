@@ -39,7 +39,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return h.LoginFailed(c, err, 2)
 	}
 	if err := security.ComparePass(
-		form.Mail, form.Pass, "123", []byte(stored.Pass)); err != nil {
+		[]byte(stored.Pass), form.Mail, form.Pass); err != nil {
 		h.LoginFailed(c, err, 3)
 	}
 

@@ -37,7 +37,7 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		return h.failure(c, errors.New("empty form"), 2)
 	}
 
-	hashed, err := security.CreatePass(user.ID, user.Pass, "123")
+	hashed, err := security.CreatePass(user.ID, user.Pass)
 	if err != nil {
 		return h.failure(c, err, 3)
 	}
