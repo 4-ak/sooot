@@ -71,15 +71,18 @@
                     key: keyText.value
                 })
             })
-                .then((response) => {
-                    console.log("성공");
+                .then((res) => {
+                    if(!res.ok) {
+                        document.getElementById("KeyCertMsg").innerText = "번호를 잘못입력했습니다.";
+                        return;
+                    }
                     document.getElementById("KeyCertMsg").innerText = "성공!";
-                    window.location.href = response.url;
+                    window.location.href = res.url;
                 })
                 .catch((error) => {
                     console.log("실패");
                     console.log(error);
-                    document.getElementById("KeyCertMsg").innerText = "번호를 잘못입력했습니다.";
+
                 });
             return false;
         }
