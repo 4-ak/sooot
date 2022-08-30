@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/4-ak/sooot/db/queries"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,7 +29,11 @@ func (h *Handler) SendMail(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
-	// TODO : check userID exists
+	var id, pw string
+	if err := queries.AccountWithPass().
+		QueryRow(mail.Mail).Scan(&id, &pw); err == nil {
+		return c.SendStatus(fiber.StatusConflict)
+	}
 
 	cypherMail, err := security.EncrpytionWithBase64([]byte(mail.Mail))
 	if err != nil {
