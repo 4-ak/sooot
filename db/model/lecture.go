@@ -51,3 +51,14 @@ func (l *Lecture) RowData(uid int) {
 		&l.Base.Name,
 		&l.Base.Professor)
 }
+
+func (l *Lecture) CompareData() {
+	row := queries.CompareLecture().QueryRow(
+		l.Base.Name,
+		l.Base.Professor,
+		l.Data.Year,
+		l.Data.Semester,
+		l.Data.Credit,
+		l.Data.Major)
+	row.Scan(&l.Data.Uid)
+}

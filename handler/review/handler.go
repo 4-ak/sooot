@@ -45,7 +45,8 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 	review := model.NewReview()
 	lect_id := c.Params("lectid")
 	c.BodyParser(&review)
-	review.Insert(lect_id, c.Locals("uid").(string))
+	base_id, _ := strconv.Atoi(lect_id)
+	review.Insert(base_id, c.Locals("uid").(string))
 	return c.Redirect("/review/" + lect_id)
 }
 
