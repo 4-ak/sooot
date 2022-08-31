@@ -35,12 +35,15 @@ func (h *Handler) SendMail(c *fiber.Ctx) error {
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name:  "mail",
-		Value: string(mail.Mail),
+		Name:   "mail",
+		Value:  string(mail.Mail),
+		MaxAge: int(60 * 15),
 	})
+
 	c.Cookie(&fiber.Cookie{
-		Name:  "key",
-		Value: GenerateCertKey(),
+		Name:   "key",
+		Value:  GenerateCertKey(),
+		MaxAge: int(60 * 15),
 	})
 
 	return c.SendString("전송된 메일 :" + mail.Mail)
