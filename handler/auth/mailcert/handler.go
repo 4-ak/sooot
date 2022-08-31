@@ -6,7 +6,6 @@ import (
 	"math/rand"
 
 	"github.com/4-ak/sooot/db/queries"
-	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -35,24 +34,13 @@ func (h *Handler) SendMail(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusConflict)
 	}
 
-	cypherMail, err := security.EncrpytionWithBase64([]byte(mail.Mail))
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	cypherKey, err := security.EncrpytionWithBase64([]byte(GenerateCertKey()))
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
 	c.Cookie(&fiber.Cookie{
 		Name:  "mail",
-		Value: string(cypherMail),
+		Value: string(mail.Mail),
 	})
 	c.Cookie(&fiber.Cookie{
 		Name:  "key",
-		Value: cypherKey,
+		Value: GenerateCertKey(),
 	})
 
 	return c.SendString("전송된 메일 :" + mail.Mail)
@@ -66,12 +54,7 @@ func (h *Handler) KeyCert(c *fiber.Ctx) error {
 		fmt.Println(err)
 		return c.SendStatus(404)
 	}
-	keyChyper := c.Cookies("key", "")
-	want, err := security.DecrptionWithBase64(keyChyper)
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
+	want := c.Cookies("key", "")
 
 	if string(want) == key.Key {
 		return c.Redirect("/registration", 302)
