@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/4-ak/sooot/db/queries"
 )
@@ -27,6 +28,7 @@ func NewReview() Review {
 
 func (r *Review) SelectData(lect_id string) []Review {
 	row, err := queries.ReviewAll().Query(lect_id)
+
 	arr := make([]Review, 0)
 	for row.Next() {
 		row.Scan(
@@ -41,6 +43,8 @@ func (r *Review) SelectData(lect_id string) []Review {
 			&r.Comment,
 			&r.Created_at,
 			&r.Lecture_name)
+		Created_at := strings.Split(r.Created_at, "T")
+		r.Created_at = Created_at[0] + " " + strings.Split(Created_at[1], ".")[0]
 		arr = append(arr, *r)
 	}
 	if err != nil || len(arr) == 0 {
