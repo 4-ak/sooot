@@ -26,11 +26,13 @@ func NewServer() *Server {
 			Views: engine,
 		}),
 	}
-
 	// TODO: we must keep the key when server rebuild
 	server.App.Use(encryptcookie.New(encryptcookie.Config{
 		Key: encryptcookie.GenerateKey(),
 	}))
+
+	server.App.Use(authtoken.IdentifyClient)
+
 	server.App.Get("/", server.IndexPage)
 	server.App.Static("/static", "static")
 
