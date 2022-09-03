@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/4-ak/sooot/db/model"
+	authtoken "github.com/4-ak/sooot/handler/auth"
 	"github.com/4-ak/sooot/handler/lectbrowser"
 	"github.com/gofiber/fiber/v2"
 )
@@ -59,9 +60,9 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 	lect.CompareData()
 	if lect.Data.Uid == 0 {
 		lect.Data.Insert(lect.Base.Name, lect.Base.Professor)
-		review.Insert(lect.Data.Uid, c.Locals("uid").(string))
+		review.Insert(lect.Data.Uid, c.Locals("user").(authtoken.UserToken).ID)
 	} else {
-		review.Insert(lect.Data.Uid, c.Locals("uid").(string))
+		review.Insert(lect.Data.Uid, c.Locals("user").(authtoken.UserToken).ID)
 	}
 	return c.Redirect("/lecture")
 }
