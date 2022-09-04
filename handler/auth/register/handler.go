@@ -23,9 +23,9 @@ func (h *Handler) RegistrationPage(c *fiber.Ctx) error {
 func (h *Handler) Register(c *fiber.Ctx) error {
 	var user account
 
-	mail, err := security.DecrptionWithBase64(c.Cookies("mail", ""))
-	if err != nil {
-		return h.failure(c, err, 0)
+	mail := c.Cookies("mail", "")
+	if mail == "" {
+		return h.failure(c, fmt.Errorf("mail cookie is empty"), 0)
 	}
 
 	if err := c.BodyParser(&user); err != nil {
