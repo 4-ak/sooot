@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/4-ak/sooot/db/model"
+	authtoken "github.com/4-ak/sooot/handler/auth"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,7 +14,7 @@ type Handler struct{}
 func (h *Handler) Review(c *fiber.Ctx) error {
 	review := model.NewReview()
 	lect_id := (c.Params("lectid"))
-	userid, ok := strconv.Atoi(c.Locals("uid").(string))
+	userid, ok := strconv.Atoi(c.Locals("user").(authtoken.UserToken).ID)
 	if ok != nil {
 		userid = -1
 		fmt.Print("userid error")
@@ -46,7 +47,7 @@ func (h *Handler) InsertData(c *fiber.Ctx) error {
 	lect_id := c.Params("lectid")
 	c.BodyParser(&review)
 	base_id, _ := strconv.Atoi(lect_id)
-	review.Insert(base_id, c.Locals("uid").(string))
+	review.Insert(base_id, c.Locals("user").(authtoken.UserToken).ID)
 	return c.Redirect("/review/" + lect_id)
 }
 

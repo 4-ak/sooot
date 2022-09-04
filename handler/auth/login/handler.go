@@ -3,8 +3,10 @@ package login
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/4-ak/sooot/db/queries"
+	authtoken "github.com/4-ak/sooot/handler/auth"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -40,10 +42,15 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	}
 	if err := security.ComparePass(
 		[]byte(stored.Pass), form.Mail, form.Pass); err != nil {
-		h.LoginFailed(c, err, 3)
+		return h.LoginFailed(c, err, 3)
 	}
-
-	jwtoken, err := h.MakeToken(stored.UID, form.Mail)
+	token := authtoken.UserToken{
+		ID:         stored.UID,
+		ClientID:   c.Cookies("ident", ""),
+		Permission: "user",
+		Expires:    time.Now().Add(time.Hour).Format(time.RFC3339),
+	}
+	jwtoken, err := token.JWT()
 	if err != nil {
 		return h.LoginFailed(c, err, 4)
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/4-ak/sooot/handler/review"
 	"github.com/4-ak/sooot/security"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/template/html"
 )
 
@@ -25,6 +26,12 @@ func NewServer() *Server {
 			Views: engine,
 		}),
 	}
+	// TODO: we must keep the key when server rebuild
+	server.App.Use(encryptcookie.New(encryptcookie.Config{
+		Key: encryptcookie.GenerateKey(),
+	}))
+
+	server.App.Use(authtoken.IdentifyClient)
 
 	server.App.Get("/", server.IndexPage)
 	server.App.Static("/static", "static")
