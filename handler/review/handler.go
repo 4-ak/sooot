@@ -22,6 +22,8 @@ func (h *Handler) Review(c *fiber.Ctx) error {
 		"ReviewData": review.SelectData(lect_id),
 		"Lectid":     lect_id,
 		"Userid":     userid,
+		"Scale_5":    make([]int, 5),
+		"Scale_3":    make([]int, 3),
 	})
 }
 
