@@ -2,62 +2,12 @@
 <html lang="en">
 <head>
     {{ template "layout/header" . }}
-    <script>
-        function Test(){
-            const a = document.getElementById("benefit");
-
-            const child = document.createElement("div");
-            child.classList.add("bi");
-            child.classList.add("bi-star-fill");
-    
-            a.appendChild(child);
-            
-        }
-    </script>
 </head>
 <body>
-    <section class="center-content mw-7">
-        <h1><a href="/review/{{.Lectid}}/c">Create Data</a></h1>
-        <h2>현재 접속자 : {{ .Userid}}</h2>
-        <table style="border: 1px solid;" class="table table-hover table-striped text-center">
-            <tr>
-                <th>Update</th>
-                <th>Delete</th>
-                <th>uid</th>
-                <th>강의 이름</th>
-                <th>유익함 점수</th>
-                <th>꿀강 점수</th>
-                <th>과제</th>
-                <th>팀플</th>
-                <th>발표</th>
-                <td>코멘트</td>
-                <th>작성자</th>
-                <th>작성일</th>
-            </tr>
-            {{range .ReviewData}}
-            <tr>
-                {{if eq $.Userid .Writer}}
-                <td><a href="/review/{{.Lecture_uid}}/{{.Uid}}/u">UPDATE</a></td>
-                <td><a href="/review/{{.Lecture_uid}}/{{.Uid}}/d">DELETE</a></td>
-                {{else}}
-                <td></td>
-                <td></td>
-                {{end}}
-                <td>{{.Uid}}</td>
-                <td>{{.Lecture_name }}</td>
-                <td>{{.Beneficial}}</td>
-                <td>{{.Honey}}</td>
-                <td>{{.Assignment}}</td>
-                <td>{{.Team_project}}</td>
-                <td>{{.Presentation}}</td>
-                <td>{{.Comment}}</td>
-                <td>{{.Writer}}</td>
-                <td>{{.Created_at}}</td>
-            </tr>
-            {{end}}
-        </table>
-        <button><a href="/lecture">Lecture</a></button>
-    </section>
+    <div class="d-grid gap-2 col-4 mx-auto d-md-flex justify-content-md-center">
+        <a class="btn btn-primary" href="/review/{{.Lectid}}/c" role="button">Create Data</a>
+        <a class="btn btn-primary" href="/lecture" role="button">Lecture</a>
+    </div>
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-6 row-cols-2 row-cols-md-4 row-cols-xl-4 juxtify-content-center">
             {{range $e := .ReviewData}}
@@ -65,11 +15,7 @@
                 <div class="h-100 card">
                     <div class="card-body p-4">
                         <div class="text-center">
-                            <p class="word card-text fs-6 lh-base">{{.Comment}}<br>로렘 입숨(lorem ipsum; 줄여서 립숨, lipsum)은 출판이나 그래픽 디자인 분야에서 폰트, 타이포그래피, 레이아웃 같은 그래픽 요소나 시각적 연출을 보여줄 때 사용하는 표준 채우기 텍스트로, 최종 결과물에 들어가는 실제적인 문장 내용이 채워지기 전에 시각 디자인 프로젝트 모형의 채움 글로도 이용된다. 이런 용도로 사용할 때 로렘 입숨을 그리킹(greeking)이라고도 부르며, 때로 로렘 입숨은 공간만 차지하는 무언가를 지칭하는 용어로도 사용된다.
-
-                                로렘 입숨은 전통 라틴어와 닮은 점 때문에 종종 호기심을 유발하기도 하지만 그 이상의 의미를 담지는 않는다. 문서에서 텍스트가 보이면 사람들은 전체적인 프레젠테이션보다는 텍스트에 담긴 뜻에 집중하는 경향이 있어서 출판사들은 서체나 디자인을 보일 때는 프레젠테이션 자체에 초점을 맞추기 위해 로렘 입숨을 사용한다.
-                                
-                                로렘 입숨은 영어에서 사용하는 문자들의 전형적인 분포에 근접하다고도 하는데, 이 점 때문에 프레젠테이션으로 초점을 이동하는 데에도 도움을 준다.</p>
+                            <p class="word card-text fs-6 lh-base">{{.Comment}}</p>
                         </div>
                     </div>
                     <div class="card-body p-4">
