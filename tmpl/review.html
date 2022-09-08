@@ -5,22 +5,19 @@
 </head>
 <body>
     <div class="d-grid gap-2 col-4 mx-auto d-md-flex justify-content-md-center">
-        <a class="btn btn-primary" href="/review/{{.Lectid}}/c" role="button">Create Data</a>
-        <a class="btn btn-primary" href="/lecture" role="button">Lecture</a>
+        <a class="btn btn-primary btn-size" href="/review/{{.Lectid}}/c" role="button">Create Data</a>
+        <a class="btn btn-primary btn-size" href="/lecture" role="button">Lecture</a>
     </div>
     <div class="container px-4 px-lg-5 mt-5">
-        <div class="row gx-4 gx-lg-6 row-cols-2 row-cols-md-4 row-cols-xl-4 juxtify-content-center">
+        <div class="row gx-4 gx-lg-6 row-cols-4 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 row-cols-xxl-4 justify-content-center">
             {{range $e := .ReviewData}}
-            <div class="col mb-5">
-                <div class="h-100 card">
+            <div class="col mb-5 card-size">
+                <div class="h-100 card text-center">
                     <div class="card-body p-4">
-                        <div class="text-center">
-                            <p class="word card-text fs-6 lh-base">{{.Comment}}</p>
-                        </div>
+                        <p class="word card-text fs-6 lh-base">{{.Comment}}</p>
                     </div>
                     <div class="card-body p-4">
-                        <div class="text-center">
-                            <div class="row g-2">
+                        <div class="row g-2">
                                 {{$score := $e.Assignment}}
                                 <div class="col">
                                     <p class="fs-6">과제</p>
@@ -60,8 +57,8 @@
                                         {{end}}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row g-2">
+                        </div>
+                        <div class="row g-2">
                                 {{$score := $e.Beneficial}}
                                 <div class="col">
                                     <p class="fs-6">유익함</p>
@@ -88,7 +85,6 @@
                                         {{end}}
                                     </div>
                                 </div>
-                            </div>                  
                         </div>
                         <p class="card-text text-end"><small class="text-muted">{{.Created_at}}</small></p>
                     </div>

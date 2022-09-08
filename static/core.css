@@ -87,9 +87,17 @@ input[type="password"]:focus {
     line-height: 1.2; 
     word-wrap: break-word; 
     display: -webkit-box;
-    -webkit-line-clamp: 8; 
+    -webkit-line-clamp: 5; 
     -webkit-box-orient: vertical;
     border-radius: 0.3rem;
     background-color: white;
-    min-height: 8.6rem;
+    min-height: 7.6rem;
+}
+
+.card-size{
+    width: 286px;
+}
+
+.btn-size{
+    width: 150px;
 }
