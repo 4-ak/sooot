@@ -1,50 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>review</title>
+    {{ template "layout/header" . }}
 </head>
 <body>
-    <h1><a href="/review/{{.Lectid}}/c">Create Data</a></h1>
-    <h2>현재 접속자 : {{ .Userid}}</h2>
-    <table border="1">
-        <tr>
-            <th>Update</th>
-            <th>Delete</th>
-            <th>uid</th>
-            <th>강의 이름</th>
-            <th>유익함 점수</th>
-            <th>꿀강 점수</th>
-            <th>과제</th>
-            <th>팀플</th>
-            <th>발표</th>
-            <td>코멘트</td>
-            <th>작성자</th>
-            <th>작성일</th>
-        </tr>
-        {{range .ReviewData}}
-        <tr>
-            {{if eq $.Userid .Writer}}
-            <td><a href="/review/{{.Lecture_uid}}/{{.Uid}}/u">UPDATE</a></td>
-            <td><a href="/review/{{.Lecture_uid}}/{{.Uid}}/d">DELETE</a></td>
-            {{else}}
-            <td></td>
-            <td></td>
+    <div class="d-grid gap-2 col-4 mx-auto d-md-flex justify-content-md-center">
+        <a class="btn btn-primary btn-size" href="/review/{{.Lectid}}/c" role="button">Create Data</a>
+        <a class="btn btn-primary btn-size" href="/lecture" role="button">Lecture</a>
+    </div>
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-6 row-cols-4 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 row-cols-xxl-4 justify-content-center">
+            {{range $e := .ReviewData}}
+            <div class="col mb-5 card-size">
+                <div class="h-100 card text-center">
+                    <div class="card-body p-4">
+                        <p class="word card-text fs-6 lh-base">{{.Comment}}</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-2">
+                                {{$score := $e.Assignment}}
+                                <div class="col">
+                                    <p class="fs-6">과제</p>
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        {{range $i, $num := $.Scale_3}}
+                                            {{if lt $i $score}}
+                                            <div class="bi bi-star-fill"></div>
+                                            {{else}}
+                                            <div class="bi bi-star"></div>
+                                            {{end}}
+                                        {{end}}
+                                    </div>
+                                </div>
+                                {{$score := $e.Team_project}}
+                                <div class="col">
+                                    <p class="fs-6">팀플</p>
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        {{range $i, $num := $.Scale_3}}
+                                            {{if lt $i $score}}
+                                            <div class="bi bi-star-fill"></div>
+                                            {{else}}
+                                            <div class="bi bi-star"></div>
+                                            {{end}}
+                                        {{end}}
+                                    </div>
+                                </div>
+                                {{$score := $e.Presentation}}
+                                <div class="col">
+                                    <p class="fs-6">발표</p>
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        {{range $i, $num := $.Scale_3}}
+                                            {{if lt $i $score}}
+                                            <div class="bi bi-star-fill"></div>
+                                            {{else}}
+                                            <div class="bi bi-star"></div>
+                                            {{end}}
+                                        {{end}}
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="row g-2">
+                                {{$score := $e.Beneficial}}
+                                <div class="col">
+                                    <p class="fs-6">유익함</p>
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        {{range $i, $num := $.Scale_5}}
+                                            {{if lt $i $score}}
+                                            <div class="bi bi-star-fill"></div>
+                                            {{else}}
+                                            <div class="bi bi-star"></div>
+                                            {{end}}
+                                        {{end}}
+                                    </div>
+                                </div>
+                                {{$score := $e.Honey}}
+                                <div class="col">
+                                    <p class="fs-6">꿀강</p>
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        {{range $i, $num := $.Scale_5}}
+                                            {{if lt $i $score}}
+                                            <div class="bi bi-star-fill"></div>
+                                            {{else}}
+                                            <div class="bi bi-star"></div>
+                                            {{end}}
+                                        {{end}}
+                                    </div>
+                                </div>
+                        </div>
+                        <p class="card-text text-end"><small class="text-muted">{{.Created_at}}</small></p>
+                    </div>
+                </div>
+            </div>
             {{end}}
-            <td>{{.Uid}}</td>
-            <td>{{.Lecture_name }}</a></td>
-            <td>{{.Beneficial}}</td>
-            <td>{{.Honey}}</td>
-            <td>{{.Assignment}}</td>
-            <td>{{.Team_project}}</td>
-            <td>{{.Presentation}}</td>
-            <td>{{.Comment}}</td>
-            <td>{{.Writer}}</td>
-            <td>{{.Created_at }}</td>
-        </tr>
-        {{end}}
-    </table>
-    <button><a href="/lecture">Lecture</a></button>
+        </div>
+    </div>
 </body>
 </html>
