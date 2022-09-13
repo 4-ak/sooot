@@ -1,0 +1,154 @@
+<script defer>
+    const keywordCache = new Map();
+
+        function NewItem(data, i) {
+            const child = document.createElement("a");
+            child.href = "javascript:AddLectureData("+i+")";
+            child.classList.add("list-group-item")
+            child.classList.add("list-group-item-action");
+            child.id="lecture-group"+i;
+
+            child.innerText= data['Name'] + "/" + data['Professor'] + "/" + data['Major'];
+            return child;
+        }
+
+        function SetGroupList(group, data) {
+            group.innerHTML = "";
+            for (const i in data) {
+                group.appendChild(NewItem(data[i]), i);
+            }
+        }
+
+        function GetLectures() {
+            const lectureText = document.getElementById("lecture-name-text");
+            const lectureGroup = document.getElementById("lecture-group");
+
+            if(lectureText.value==="") {
+                lectureGroup.style.display="none";
+                return;
+            }
+
+            if (keywordCache.has(lectureText.value)) {
+                const data = keywordCache.get(lectureText.value);
+                SetGroupList(lectureGroup, data);
+                lectureGroup.style.display = "flex";
+                return;
+            }
+    
+            fetch("/lecture/ql?query="+ lectureText.value)    
+            .then((res) => {
+                if (!res.ok) {
+                    console.log("잘못된 접근")
+                    return;
+                }
+                res.json().then((data) => {
+                    SetGroupList(lectureGroup, data);
+                    keywordCache.set(lectureText.value, data);
+                    lectureGroup.style.display="flex";
+                })
+            })
+            .catch((err) => {
+    
+            })
+        }
+        function AddLectureData(i){
+            const lectureText = document.getElementById("lecture-name-text");
+            const professorText = document.getElementById("professor-name-text");
+            const selectData = document.getElementById("lecture-group"+i).textContent.split("/");
+            const lectureGroup = document.getElementById("lecture-group");
+
+            lectureText.value = selectData[0]
+            professorText.value = selectData[1];
+            RemoveHTML(lectureGroup);
+        }
+        function GetMajor(){
+            const majorText = document.getElementById("major-name-text");
+            const majorGroup = document.getElementById("major-group");
+            if(majorText.value==="") {
+                majorGroup.style.display="none";
+                return;
+            }
+            fetch("/lecture/qm?query="+ majorText.value)    
+            .then((res) => {
+                if (!res.ok) {
+                    console.log("잘못된 접근")
+                    return;
+                }
+                res.json().then((data) => {
+                    majorGroup.innerHTML ="";
+                    for(const i in data) {
+                        const child = document.createElement("a");
+                        child.href="javascript:AddMajorData("+i+")";
+                        child.classList.add("list-group-item")
+                        child.classList.add("list-group-item-action");
+                        child.id="major-group"+i;
+    
+                        child.innerText = data[i].Name;
+                        majorGroup.appendChild(child);
+                    }
+                    majorGroup.style.display="flex";
+                })
+            })
+            .catch((err) => {
+    
+            })
+        }
+        function AddMajorData(i){
+            const majorText = document.getElementById("major-name-text");
+            const majorGroup = document.getElementById("major-group");
+            const selectData = document.getElementById("major-group"+i).textContent;
+
+            majorText.value = selectData;
+            RemoveHTML(majorGroup);
+        }
+        function RemoveHTML(id){
+            id.innerHTML = "";
+        }
+</script>
+<div class="text-group mb-3">
+    <div class="form-floating">
+        <input type="text" name="Name" 
+        id="lecture-name-text" class="form-control text-group-first"
+        oninput="GetLectures()">
+        <label for="lecture-name-text">강의명</label>
+    </div>
+    <div class="list-group" id="lecture-group">
+    </div>
+    <div class="form-floating">
+        <input type="text" name="Professor" id="professor-name-text"
+            class="form-control text-group-last">
+        <label for="professor-name-text">교수님</label>
+    </div>
+</div>
+<div class="mb-2">
+    <select class="form-select" name="Year" aria-label="Default select example">
+        <option value="2022" selected>2022년</option>
+        <option value="2021">2021년</option>
+        <option value="2020">2020년</option>
+        <option value="2019">2019년</option>
+    </select>
+</div>
+<div class="mb-2">
+    <div class="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
+        {{range $i, $a := .Semester}}
+        <input type="radio" class="btn-check" name="Semester" id="btnradio{{$i}}" autocomplete="off" value="{{$a.Name}}">
+        <label class="btn btn-outline-primary" for="btnradio{{$i}}" >{{$a.Name}}</label>
+        {{end}}
+      </div>
+</div>
+<div class="row">
+    <div class="col col-sm-3">
+        <div class="input-group mb-3">
+            <input type="text" name="Credit" id="credit-text" class="form-control">
+            <span class="input-group-text">학점</span>
+        </div>
+    </div>
+    <div class="col col-sm">
+        <div class="input-group">
+            <input type="text" name="Major" id="major-name-text" class="form-control" placeholder="학과" oninput="GetMajor()">
+            <span class="input-group-text">학과</span>
+        </div>
+        <div class="list-group" id="major-group"></div>
+    </div>
+    
+</div>
