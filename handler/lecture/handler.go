@@ -19,7 +19,7 @@ type Handler struct{}
 func (h *Handler) Create(c *fiber.Ctx) error {
 	major := model.NewMajor()
 	semester := model.NewSemester()
-	return c.Render("addreview", fiber.Map{
+	return c.Render("write_review", fiber.Map{
 		"Major":    major.Major(),
 		"Semester": semester.Semester(),
 	})

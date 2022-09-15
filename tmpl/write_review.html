@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
     {{ template "layout/header" . }}
+    <style>
+        #lecture-group {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <section class="center-content mw-5">
-        <h1 class="text-center">후기</h1>
+        <h1 class="text-center">강의 선택</h1>
         <form action="" method="post" class="">
+            {{template "layout/addlecture" .}}
             {{template "layout/addreview" .}}
             <input type="submit" value="제출">
         </form>
