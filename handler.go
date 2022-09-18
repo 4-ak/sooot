@@ -45,12 +45,14 @@ func NewServer() *Server {
 
 	auth.Get("/mail-cert", mailCertHandler.Page)
 	auth.Post("/mail-cert", mailCertHandler.MailCertForCreateAccount)
-	auth.Post("/key-cert", mailCertHandler.KeyCert)
+	auth.Post("/key-cert", mailCertHandler.KeyCertForCreateAccount)
 	auth.Get("/registration", registerHandler.RegistrationPage)
 	auth.Post("/registration", registerHandler.Register)
 
 	auth.Get("/forgot-password", loginHandler.ForgotPasswordPage)
 	auth.Get("/reset-password", loginHandler.ResetPasswordPage)
+	auth.Post("/mail-check", mailCertHandler.MailCertForResetPassword)
+	auth.Post("/forgot-key-cert", mailCertHandler.KeyCertForResetPassword)
 
 	lectureHandler := lecture.Handler{}
 	lectureHandler.CacheLecture()

@@ -15,7 +15,15 @@ func (h *Handler) Page(c *fiber.Ctx) error {
 	return c.Render("mail_cert", nil)
 }
 
-func (h *Handler) SendMail(c *fiber.Ctx) error {
+func (h *Handler) MailCertForCreateAccount(c *fiber.Ctx) error {
+	return h.SendMail(c, false)
+}
+
+func (h *Handler) MailCertForResetPassword(c *fiber.Ctx) error {
+	return h.SendMail(c, true)
+}
+
+func (h *Handler) SendMail(c *fiber.Ctx, doAccuntMustExist bool) error {
 	var mail struct {
 		Mail string
 	}
@@ -28,10 +36,20 @@ func (h *Handler) SendMail(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
-	var id, pw string
-	if err := queries.AccountWithPass().
-		QueryRow(mail.Mail).Scan(&id, &pw); err == nil {
+	var uid, pw string
+	err := queries.AccountWithPass().
+		QueryRow(mail.Mail).Scan(&uid, &pw)
+
+	if (doAccuntMustExist && err != nil) ||
+		(!doAccuntMustExist && err == nil) {
 		return c.SendStatus(fiber.StatusConflict)
+	}
+
+	if doAccuntMustExist {
+		c.Cookie(&fiber.Cookie{
+			Name:  "uid",
+			Value: uid,
+		})
 	}
 
 	c.Cookie(&fiber.Cookie{
@@ -46,10 +64,17 @@ func (h *Handler) SendMail(c *fiber.Ctx) error {
 		MaxAge: int(60 * 15),
 	})
 
-	return c.SendString("전송된 메일 :" + mail.Mail)
+	return c.SendStatus(fiber.StatusOK)
 }
 
-func (h *Handler) KeyCert(c *fiber.Ctx) error {
+func (h *Handler) KeyCertForCreateAccount(c *fiber.Ctx) error {
+	return h.KeyCert(c, "/registration")
+}
+
+func (h *Handler) KeyCertForResetPassword(c *fiber.Ctx) error {
+	return h.KeyCert(c, "/reset-password")
+}
+func (h *Handler) KeyCert(c *fiber.Ctx, redirectURL string) error {
 	var key struct {
 		Key string
 	}
@@ -60,7 +85,7 @@ func (h *Handler) KeyCert(c *fiber.Ctx) error {
 	want := c.Cookies("key", "")
 
 	if string(want) == key.Key {
-		return c.Redirect("/registration", 302)
+		return c.Redirect(redirectURL, 302)
 	} else {
 		return c.SendStatus(404)
 	}

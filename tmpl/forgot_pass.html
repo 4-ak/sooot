@@ -10,7 +10,7 @@
     </style>
     <script defer>
         function mailSubmit() {
-            const mailText= doucment.getElementById("mailbox");
+            const mailText= document.getElementById("mailbox");
             const msgbox = document.getElementById("MailMsg");
             if(mailText.value === "") {
                 alert("메일을 입력해주세요");
@@ -30,7 +30,10 @@
                 document.getElementById("keyarea").style.visibility="visible";
                 document.getElementById("cert-sendmail").style.display = "none";
             })
-
+            return false;
+        }
+        function keyCert() {
+            const keyText = document.getElementById("certKeybox");
             fetch('/forgot-key-cert', {
                 method: "POST",
                 body: JSON.stringify({
@@ -44,6 +47,7 @@
                 }
                 window.location.href=res.url;
             })
+            return false;
         }
 
 
@@ -53,13 +57,13 @@
     <main class="center-content mw-3">
         <h1>계정 이메일 인증</h1>
         <span id="msgbox"></span>
-        <form action="/mail-check" method="post" onsubmit="return mailSubmit()" class="form-floating mt-3" id="mailarea">
+        <form method="POST" class="form-floating mt-3" id="mailarea" onsubmit="return mailSubmit()">
             <input type="text" class="form-control" name="mailID" id="mailbox">
             <label for="mailbox">아이디(@live.wsu.ac.kr)</label>
             <button class="btn btn-primary mt-4" id="cert-sendmail">인증번호 발송</button>
         </form>
 
-        <form action="/forgot-key-cert" method="post" class="form-floating" id="keyarea" onsubmit="return keyCert()">
+        <form method="POST" class="form-floating" id="keyarea" onsubmit="return keyCert()">
             <input type="text" class="form-control" name="certKey" id="certKeybox">
             <label for="certKeybox">인증번호</label>
             <span id="KeyCertMsg"></span><br>
