@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    {{ template "layout/header" . }}
+    <title>이메일 찾기</title>
+    <style>
+        #keyarea {
+            visibility: hidden;
+        }
+    </style>
+    <script defer>
+        function mailSubmit() {
+            const mailText= doucment.getElementById("mailbox");
+            const msgbox = document.getElementById("MailMsg");
+            if(mailText.value === "") {
+                alert("메일을 입력해주세요");
+                return false;
+            }
+            fetch('/mail-check', {
+                method: "POST",
+                body: JSON.stringify({
+                    mail: mailText.value
+                })
+            })
+            .then((res) => {
+                if(!res.ok) {
+                    alert("가입되어있지 않는 계정입니다.");
+                    return;
+                }
+                document.getElementById("keyarea").style.visibility="visible";
+                document.getElementById("cert-sendmail").style.display = "none";
+            })
+
+            fetch('/forgot-key-cert', {
+                method: "POST",
+                body: JSON.stringify({
+                    key: keyText.value
+                })
+            })
+            .then((res) => {
+                if (!res.ok) {
+                    document.getElementById("KeyCertMsg").innerText="번호를 잘못입력했습니다.";
+                    return;
+                }
+                window.location.href=res.url;
+            })
+        }
+
+
+    </script>
+</head>
+<body class="center-container text-center">
+    <main class="center-content mw-3">
+        <h1>계정 이메일 인증</h1>
+        <span id="msgbox"></span>
+        <form action="/mail-check" method="post" onsubmit="return mailSubmit()" class="form-floating mt-3" id="mailarea">
+            <input type="text" class="form-control" name="mailID" id="mailbox">
+            <label for="mailbox">아이디(@live.wsu.ac.kr)</label>
+            <button class="btn btn-primary mt-4" id="cert-sendmail">인증번호 발송</button>
+        </form>
+
+        <form action="/forgot-key-cert" method="post" class="form-floating" id="keyarea" onsubmit="return keyCert()">
+            <input type="text" class="form-control" name="certKey" id="certKeybox">
+            <label for="certKeybox">인증번호</label>
+            <span id="KeyCertMsg"></span><br>
+            <button class="btn btn-primary">인증</button>
+        </form>
+    </main>
+</body>
+</html>

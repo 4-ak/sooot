@@ -42,15 +42,18 @@ func NewServer() *Server {
 	auth := server.App.Group("/")
 	auth.Get("/login", loginHandler.Page)
 	auth.Post("/login", loginHandler.Login)
+
 	auth.Get("/mail-cert", mailCertHandler.Page)
-	auth.Post("/mail-cert", mailCertHandler.SendMail)
+	auth.Post("/mail-cert", mailCertHandler.MailCertForCreateAccount)
 	auth.Post("/key-cert", mailCertHandler.KeyCert)
 	auth.Get("/registration", registerHandler.RegistrationPage)
 	auth.Post("/registration", registerHandler.Register)
 
+	auth.Get("/forgot-password", loginHandler.ForgotPasswordPage)
+	auth.Get("/reset-password", loginHandler.ResetPasswordPage)
+
 	lectureHandler := lecture.Handler{}
 	lectureHandler.CacheLecture()
-
 	lecture := server.App.Group("/lecture", authtoken.AuthUser)
 	lecture.Get("/", lectureHandler.Lecture)
 	lecture.Get("/c", lectureHandler.Create)

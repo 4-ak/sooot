@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    {{ template "layout/header" . }}
+    <title>비밀번호 변경</title>
+</head>
+<body class="center-container text-center">
+    <main class="center-content mw-3">
+        <h1>비밀번호 재설정</h1>
+        <span id="stateMsg"></span>
+        <form onsubmit="return SetPassword()">
+            <div class="form-floating">
+                <input type="password" name="pass" id="pass" class="form-control">
+                <label for="pass">비밀번호</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" id="repass" class="form-control">
+                <label for="repass">비밀번호 확인</label>
+            </div>
+            <button class="btn btn-primary">비밀번호 변경</button>
+        </form>
+
+    </main>
+
+</body>
+</html>
