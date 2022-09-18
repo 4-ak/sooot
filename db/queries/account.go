@@ -32,6 +32,16 @@ func RegisterAccount() *sql.Stmt {
 	return stmt
 }
 
+func SetPasswordOfAccount() *sql.Stmt {
+	query := `
+	UPDATE account SET pass=$2 WHERE uid=$1
+	`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return stmt
+}
 func AccountExists() *sql.Stmt {
 	query := `
 	SELECT uid, id 

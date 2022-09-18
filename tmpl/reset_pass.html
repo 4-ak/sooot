@@ -3,12 +3,42 @@
 <head>
     {{ template "layout/header" . }}
     <title>비밀번호 변경</title>
+    <script defer>
+        function SetPassword() {
+            const pass = document.getElementById("pass").value;
+            const repass = document.getElementById("repass").value;
+            if (pass ==="" || repass === "") {
+                alert("텍스트가 비어있습니다. 채워주세요");
+                return false;
+            }
+            if (pass !== repass) {
+                alert("비밀번호가 일치하지 않습니다.");
+                return false;
+            }
+
+            fetch("/account/{{ .Uid }}", {
+                method: "PATCH",
+                body: JSON.stringify({
+                    pass: pass
+                })
+            })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("비밀번호 변경에 실패했습니다.");
+                    return;
+                }
+                alert("비밀번호 변경에 성공했습니다.");
+                window.location.href = "/login";
+            })
+            return false;
+        }
+    </script>
 </head>
 <body class="center-container text-center">
     <main class="center-content mw-3">
         <h1>비밀번호 재설정</h1>
         <span id="stateMsg"></span>
-        <form onsubmit="return SetPassword()">
+        <form method="post" onsubmit="return SetPassword()">
             <div class="form-floating">
                 <input type="password" name="pass" id="pass" class="form-control">
                 <label for="pass">비밀번호</label>

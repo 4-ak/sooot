@@ -53,6 +53,7 @@ func NewServer() *Server {
 	auth.Get("/reset-password", loginHandler.ResetPasswordPage)
 	auth.Post("/mail-check", mailCertHandler.MailCertForResetPassword)
 	auth.Post("/forgot-key-cert", mailCertHandler.KeyCertForResetPassword)
+	auth.Patch("/account/:uid", loginHandler.ResetPassword)
 
 	lectureHandler := lecture.Handler{}
 	lectureHandler.CacheLecture()

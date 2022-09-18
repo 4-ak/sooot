@@ -47,8 +47,9 @@ func (h *Handler) SendMail(c *fiber.Ctx, doAccuntMustExist bool) error {
 
 	if doAccuntMustExist {
 		c.Cookie(&fiber.Cookie{
-			Name:  "uid",
-			Value: uid,
+			Name:   "uid",
+			Value:  uid,
+			MaxAge: 60 * 15,
 		})
 	}
 
