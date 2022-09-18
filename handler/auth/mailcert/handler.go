@@ -29,7 +29,7 @@ func (h *Handler) SendMail(c *fiber.Ctx, doAccuntMustExist bool) error {
 	}
 	if err := json.Unmarshal(c.Body(), &mail); err != nil {
 		fmt.Println(err)
-		return c.SendStatus(404)
+		return c.SendStatus(fiber.StatusNotFound)
 	}
 	if mail.Mail == "" {
 		fmt.Println("[err] empty form")
@@ -80,14 +80,14 @@ func (h *Handler) KeyCert(c *fiber.Ctx, redirectURL string) error {
 	}
 	if err := json.Unmarshal(c.Body(), &key); err != nil {
 		fmt.Println(err)
-		return c.SendStatus(404)
+		return c.SendStatus(fiber.StatusNotFound)
 	}
 	want := c.Cookies("key", "")
 
 	if string(want) == key.Key {
-		return c.Redirect(redirectURL, 302)
+		return c.Redirect(redirectURL, fiber.StatusFound)
 	} else {
-		return c.SendStatus(404)
+		return c.SendStatus(fiber.StatusNotFound)
 	}
 }
 
