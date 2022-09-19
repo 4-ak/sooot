@@ -13,6 +13,7 @@ type Handler struct{}
 
 func (h *Handler) Review(c *fiber.Ctx) error {
 	review := model.NewReview()
+	lecture := model.NewLecture()
 	lect_id := (c.Params("lectid"))
 	userid, ok := strconv.Atoi(c.Locals("user").(authtoken.UserToken).ID)
 	if ok != nil {
@@ -20,11 +21,12 @@ func (h *Handler) Review(c *fiber.Ctx) error {
 		fmt.Print("userid error")
 	}
 	return c.Render("review", fiber.Map{
-		"ReviewData": review.SelectData(lect_id),
-		"Lectid":     lect_id,
-		"Userid":     userid,
-		"Scale_5":    make([]int, 5),
-		"Scale_3":    make([]int, 3),
+		"LectureData": lecture.RowData(lect_id),
+		"ReviewData":  review.SelectData(lect_id),
+		"Lectid":      lect_id,
+		"Userid":      userid,
+		"Scale_5":     make([]int, 5),
+		"Scale_3":     make([]int, 3),
 	})
 }
 
