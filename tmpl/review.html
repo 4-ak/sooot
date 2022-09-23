@@ -13,6 +13,39 @@
             <span class="fs-6 align-middle">{{.LectureData.Data.Major}}학과 개설</span>
             <span class="fs-6 align-middle">{{.LectureData.Data.Year}}년도 {{.LectureData.Data.Semester}} {{.LectureData.Data.Credit}}학점</span>
             <span class="fs-6 align-middle">{{.LectureData.Base.Name}}/{{.LectureData.Base.Professor}}</span>
+            <div class="row g-2">
+                {{$score := .Score_Avg}}
+                <div class="col">
+                    <p class="fs-6">과제</p>
+                    <div class="d-flex justify-content-center small text-warning mb-2">
+                        <span class="fs-6">{{$score.Assignment}}</span>
+                    </div>
+                </div>
+                <div class="col">
+                    <p class="fs-6">팀플</p>
+                    <div class="d-flex justify-content-center small text-warning mb-2">
+                        <span class="fs-6">{{$score.Team_project}}</span>
+                    </div>
+                </div>
+                <div class="col">
+                    <p class="fs-6">발표</p>
+                    <div class="d-flex justify-content-center small text-warning mb-2">
+                        <span class="fs-6">{{$score.Presentation}}</span>
+                    </div>
+                </div>
+                <div class="col">
+                    <p class="fs-6">유익함</p>
+                    <div class="d-flex justify-content-center small text-warning mb-2">
+                        <span class="fs-6">{{$score.Beneficial}}</span>
+                    </div>
+                </div>
+                <div class="col">
+                    <p class="fs-6">꿀강</p>
+                    <div class="d-flex justify-content-center small text-warning mb-2">
+                        <span class="fs-6">{{$score.Honey}}</span>
+                    </div>
+                </div>
+        </div>
         </div>
     </div>
     <div class="container px-4 px-lg-5 mt-5">
@@ -29,12 +62,12 @@
                                 <div class="col">
                                     <p class="fs-6">과제</p>
                                     <div class="d-flex justify-content-center small text-warning mb-2">
-                                        {{range $i, $num := $.Scale_3}}
-                                            {{if lt $i $score}}
-                                            <div class="bi bi-star-fill"></div>
-                                            {{else}}
-                                            <div class="bi bi-star"></div>
-                                            {{end}}
+                                        {{if eq $score 3}}
+                                        <span class="fs-6">많음</span>
+                                        {{else if eq $score 2}}
+                                        <span class="fs-6">보통</span>
+                                        {{else if eq $score 1}}
+                                        <span class="fs-6">적음</span>
                                         {{end}}
                                     </div>
                                 </div>
@@ -42,12 +75,12 @@
                                 <div class="col">
                                     <p class="fs-6">팀플</p>
                                     <div class="d-flex justify-content-center small text-warning mb-2">
-                                        {{range $i, $num := $.Scale_3}}
-                                            {{if lt $i $score}}
-                                            <div class="bi bi-star-fill"></div>
-                                            {{else}}
-                                            <div class="bi bi-star"></div>
-                                            {{end}}
+                                        {{if eq $score 3}}
+                                        <span class="fs-6">많음</span>
+                                        {{else if eq $score 2}}
+                                        <span class="fs-6">보통</span>
+                                        {{else if eq $score 1}}
+                                        <span class="fs-6">적음</span>
                                         {{end}}
                                     </div>
                                 </div>
@@ -55,12 +88,12 @@
                                 <div class="col">
                                     <p class="fs-6">발표</p>
                                     <div class="d-flex justify-content-center small text-warning mb-2">
-                                        {{range $i, $num := $.Scale_3}}
-                                            {{if lt $i $score}}
-                                            <div class="bi bi-star-fill"></div>
-                                            {{else}}
-                                            <div class="bi bi-star"></div>
-                                            {{end}}
+                                        {{if eq $score 3}}
+                                        <span class="fs-6">많음</span>
+                                        {{else if eq $score 2}}
+                                        <span class="fs-6">보통</span>
+                                        {{else if eq $score 1}}
+                                        <span class="fs-6">적음</span>
                                         {{end}}
                                     </div>
                                 </div>

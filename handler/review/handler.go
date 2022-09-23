@@ -6,6 +6,7 @@ import (
 
 	"github.com/4-ak/sooot/db/model"
 	authtoken "github.com/4-ak/sooot/handler/auth"
+	"github.com/4-ak/sooot/score"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,13 +21,17 @@ func (h *Handler) Review(c *fiber.Ctx) error {
 		userid = -1
 		fmt.Print("userid error")
 	}
+	lecture_data := lecture.RowData(lect_id)
+	review_data := review.SelectData(lect_id)
+	score_text := score.Score(review_data)
 	return c.Render("review", fiber.Map{
-		"LectureData": lecture.RowData(lect_id),
-		"ReviewData":  review.SelectData(lect_id),
+		"LectureData": lecture_data,
+		"ReviewData":  review_data,
 		"Lectid":      lect_id,
 		"Userid":      userid,
 		"Scale_5":     make([]int, 5),
 		"Scale_3":     make([]int, 3),
+		"Score_Avg":   score_text,
 	})
 }
 
