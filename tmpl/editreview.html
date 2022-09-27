@@ -6,6 +6,13 @@
 <body>
     <section class="center-content mw-5">
         <h1 class="text-center">후기</h1>
+        <div class="d-grid mt-5 gap-2 col-4 mx-auto justify-content-center">
+            <div class="card text-center p-2" style="width: 400px;">
+                <span class="fs-6 align-middle">{{.LectureData.Data.Major}}학과 개설</span>
+                <span class="fs-6 align-middle">{{.LectureData.Data.Year}}년도 {{.LectureData.Data.Semester}} {{.LectureData.Data.Credit}}학점</span>
+                <span class="fs-6 align-middle">{{.LectureData.Base.Name}} / {{.LectureData.Base.Professor}}</span>
+            </div>
+        </div>
         <form action="" method="post" class="">
             {{template "layout/addreview" .}}
             <input type="submit" value="제출">

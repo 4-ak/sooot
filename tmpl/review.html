@@ -12,7 +12,7 @@
         <div class="card text-center p-2" style="width: 400px;">
             <span class="fs-6 align-middle">{{.LectureData.Data.Major}}학과 개설</span>
             <span class="fs-6 align-middle">{{.LectureData.Data.Year}}년도 {{.LectureData.Data.Semester}} {{.LectureData.Data.Credit}}학점</span>
-            <span class="fs-6 align-middle">{{.LectureData.Base.Name}}/{{.LectureData.Base.Professor}}</span>
+            <span class="fs-6 align-middle">{{.LectureData.Base.Name}} / {{.LectureData.Base.Professor}}</span>
             <div class="row g-2">
                 {{$score := .Score_Avg}}
                 <div class="col">
@@ -45,7 +45,7 @@
                         <span class="fs-6">{{$score.Honey}}</span>
                     </div>
                 </div>
-        </div>
+            </div>
         </div>
     </div>
     <div class="container px-4 px-lg-5 mt-5">
