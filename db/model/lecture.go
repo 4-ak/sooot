@@ -38,18 +38,16 @@ func (l *Lecture) SelectData() []Lecture {
 	return arr
 }
 
-func (l *Lecture) RowData(uid int) {
+func (l *Lecture) RowData(uid string) Lecture {
 	row := queries.Lecture().QueryRow(uid)
 	row.Scan(
-		// &l.Data.Uid,
 		&l.Data.Year,
-		&l.Data.Base,
 		&l.Data.Semester,
 		&l.Data.Credit,
 		&l.Data.Major,
-		// &l.Base.Uid,
 		&l.Base.Name,
 		&l.Base.Professor)
+	return *l
 }
 
 func (l *Lecture) CompareData() {

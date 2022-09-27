@@ -34,7 +34,7 @@ func (h *Handler) Lecture(c *fiber.Ctx) error {
 
 func (h *Handler) Update(c *fiber.Ctx) error {
 	lect := model.NewLecture()
-	uid, _ := strconv.Atoi(c.Params("id"))
+	uid := c.Params("id")
 	lect.RowData(uid)
 	return c.Render("editlecture", fiber.Map{
 		"LectureData": lect,

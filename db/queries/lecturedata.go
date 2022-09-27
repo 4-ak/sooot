@@ -23,9 +23,13 @@ func UpdateLecture() *sql.Stmt {
 
 func Lecture() *sql.Stmt {
 	query := `
-	SELECT * 
-	FROM lecture 
-	WHERE uid = $1
+	SELECT l.year, s.name, l.credit, m.name, lb.name, p.name
+	FROM lecture l, lecture_base lb, major m, professor p, semester s
+	WHERE l.uid = $1 
+		AND l.base = lb.uid
+		AND l.major = m.uid
+		AND lb.professor = p.uid
+		AND l.semester = s.uid
 	`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
