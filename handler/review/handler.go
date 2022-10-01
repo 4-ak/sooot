@@ -36,18 +36,25 @@ func (h *Handler) Review(c *fiber.Ctx) error {
 }
 
 func (h *Handler) Create(c *fiber.Ctx) error {
+	lecture := model.NewLecture()
+	lect_id := (c.Params("lectid"))
+	lecture_data := lecture.RowData(lect_id)
 	return c.Render("editreview", fiber.Map{
-		"isUpdate": false,
+		"LectureData": lecture_data,
 	})
 }
 
 func (h *Handler) Update(c *fiber.Ctx) error {
 	review := model.NewReview()
+	lecture := model.NewLecture()
+	lect_id := (c.Params("lectid"))
 	uid, _ := strconv.Atoi(c.Params("uid"))
 	review.RowData(uid)
+	lecture_data := lecture.RowData(lect_id)
 	return c.Render("editreview", fiber.Map{
-		"ReviewData": review,
-		"isUpdate":   true,
+		"LectureData": lecture_data,
+		"ReviewData":  review,
+		"isUpdate":    true,
 	})
 }
 
