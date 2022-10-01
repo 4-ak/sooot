@@ -3,14 +3,14 @@ package security
 import "testing"
 
 func TestGenerateHash(t *testing.T) {
-	id, pass, salt := "helloworld", "123456", "123"
+	id, pass := "helloworld", "123456"
 
-	hashed, err := CreatePass(id, pass, salt)
+	hashed, err := CreatePass(id, pass)
 	if err != nil {
 		t.Errorf("can't hash password : %v", err)
 	}
 
-	if err = ComparePass(id, pass, salt, hashed); err != nil {
+	if err = ComparePass(hashed, id, pass); err != nil {
 		t.Errorf("mismatch error : %v", err)
 	}
 }

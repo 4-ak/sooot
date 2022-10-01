@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ template "layout/header" . }}
+    <style>
+        #lecture-group {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <section class="center-content mw-5">
+        <h1 class="text-center">강의</h1>
+        <form action="" method="post" class="">
+            {{template "layout/addlecture" .}}
+            <input type="submit" value="제출">
+        </form>
+    </section>
+</body>
+</html>

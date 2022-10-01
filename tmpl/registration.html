@@ -1,15 +1,39 @@
 <!DOCTYPE html>
+<html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    {{ template "layout/header" . }}
+
+    <script defer>
+        function matchPass() {
+            const passbox = document.getElementById("passbox");
+            const repassbox = document.getElementById("repassbox");
+            const textView = document.getElementById("state");
+            if (passbox.value == repassbox.value) {
+                return true;
+            }
+            textView.innerText = "비밀번호가 일치하지 않습니다.";
+            return false;
+        }
+    </script>
 </head>
-<body>
-    <h1>회원가입</h1>
-    <form action="/registration" method="post">
-        비밀번호: <input type="password" name="pass" id="passbox"><br>
-        비밀번호 확인: <input type="password" id="repassbox">
-        <button>회원가입</button>
-    </form>
+
+<body class="center-container text-center">
+    <main class="center-content mw-3">
+        <h1>회원가입</h1>
+        <span id="state"></span>
+        <form action="/registration" method="post" onsubmit="return matchPass()">
+            <div class="form-floating">
+                <input type="password" class="form-control" name="pass" id="passbox">
+                <label for="passbox">비밀번호</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" name="pass" id="repassbox">
+                <label for="repassbox">비밀번호 확인</label>
+            </div>
+            <button class="btn btn-primary">회원가입</button>
+        </form>
+    </main>
 </body>
+
 </html>

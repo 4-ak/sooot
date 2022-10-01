@@ -3,7 +3,7 @@ package security
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"encoding/base64"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -25,31 +25,11 @@ func KeyGen() error {
 	return nil
 }
 
-func EncrpytionWithBase64(data []byte) (string, error) {
-	r, err := rsa.EncryptPKCS1v15(rand.Reader, RSAkey.Public, data)
-	if err != nil {
-		return "", err
-	}
-	return base64.StdEncoding.EncodeToString(r), nil
+func CreatePass(plains ...string) ([]byte, error) {
+
+	return bcrypt.GenerateFromPassword([]byte(strings.Join(plains, "")), 11)
 }
 
-func DecrptionWithBase64(data string) ([]byte, error) {
-	r, err := base64.StdEncoding.DecodeString(data)
-	if err != nil {
-		return nil, err
-	}
-	return rsa.DecryptPKCS1v15(rand.Reader, RSAkey.Private, r)
-}
-
-func CreatePlainPass(id, pass, salt string) []byte {
-	data := append([]byte(id), []byte(pass)...)
-	return append(data, []byte(salt)...)
-}
-
-func CreatePass(id, pass, salt string) ([]byte, error) {
-	return bcrypt.GenerateFromPassword(CreatePlainPass(id, pass, salt), 11)
-}
-
-func ComparePass(id, pass, salt string, hashed []byte) error {
-	return bcrypt.CompareHashAndPassword(hashed, CreatePlainPass(id, pass, salt))
+func ComparePass(hashed []byte, plains ...string) error {
+	return bcrypt.CompareHashAndPassword(hashed, []byte(strings.Join(plains, "")))
 }

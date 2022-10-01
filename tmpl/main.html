@@ -1,13 +1,8 @@
 <!DOCTYPE html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>main</title>
+    {{template "layout/header" .}}
 </head>
 <body>
-    {{range .Courses}}
-        <div>{{.Name}}/{{.Professor}}</div>
-    {{end}}
-    <a href="/course">course</a>
+    <a href="/lecture">lecture</a>
 </body>
 </html>
